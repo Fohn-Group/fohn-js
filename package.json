@@ -5,6 +5,7 @@
   "main": "lib/fohn-ui.js",
   "scripts": {
     "build": "webpack --env production",
+    "build-dist": "webpack --env distribution",
     "dev": "webpack --progress --watch --env development",
     "profile": "webpack  --env production --profile --json > ./profile/fohn-ui-bundle-profile.json",
     "analyze-profile": "webpack-bundle-analyzer ./profile/fohn-ui-bundle-profile.json",

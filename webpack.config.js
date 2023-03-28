@@ -30,9 +30,9 @@ const packageVersion = require('./package.json').version;
 
 module.exports = (env) => {
   // determine which mode
-  const isProduction = env.production;
+  const isProduction = env.production || env.distribution;
   const srcDir = path.resolve(__dirname, './src');
-  const publicDir = path.resolve(__dirname, '../ui/public');
+  const outputDir = env.distribution ? path.resolve(__dirname, './dist') : path.resolve(__dirname, '../ui/public');
   const libraryName = 'fohn';
   const filename = libraryName + '-ui';
 
@@ -48,7 +48,7 @@ module.exports = (env) => {
     devtool: isProduction ? false : 'source-map',
     performance: isProduction ? prodPerformance : {},
     output: {
-      path: publicDir,
+      path: outputDir,
       filename: isProduction ? '[name].min.js' : '[name].js',
       library: libraryName,
       libraryTarget: 'umd',
