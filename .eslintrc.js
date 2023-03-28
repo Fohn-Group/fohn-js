@@ -1,0 +1,65 @@
+module.exports = {
+  env: {
+    browser: true,
+    node: true,
+    es6: true,
+  },
+  extends: [
+    'eslint:recommended',
+    'plugin:vue/vue3-essential',
+  ],
+  parserOptions: {
+    ecmaVersion: '2020',
+    sourceType: 'module',
+  },
+  plugins: [
+    'vue',
+  ],
+  globals: {
+    fohn: true,
+    $: true,
+    jQuery: true,
+    flatpickr: true,
+  },
+  rules: {
+    indent: ['error', 2],
+    'object-shorthand': 'off',
+    'func-names': ['error', 'never'],
+    'no-param-reassign': 'off',
+    'class-methods-use-this': 'off',
+    'import/no-unresolved': 'off',
+    'no-plusplus': 'off',
+    'consistent-return': 'off',
+    'no-nested-ternary': 'off',
+    'import/prefer-default-export': 'off',
+    'no-console': ['error', { allow: ['warn', 'error'] }],
+    'no-underscore-dangle': 'off',
+    'max-len': ['error', {
+      code: 120,
+      ignoreTemplateLiterals: true,
+      ignoreComments: true,
+      ignoreStrings: true,
+    }],
+    'prefer-template': ['off'],
+    'no-restricted-syntax': ['off'],
+    'no-unused-vars': ['error', { vars: 'all', args: 'none' }],
+    'no-restricted-globals': 'off',
+    'vue/no-dupe-keys': 'off',
+    'vue/no-unused-components': 'off',
+    'vue/no-multiple-template-root': 'off',
+    'vue/multi-word-component-names': 'off',
+    'vue/no-setup-props-destructure': 'off',
+    'vue/no-v-model-argument': 'off',
+    'spaced-comment': ['error', 'always', {
+      line: {
+        markers: ['/'],
+        exceptions: ['-', '+'],
+      },
+      block: {
+        markers: ['!'],
+        exceptions: ['*'],
+        balanced: true,
+      },
+    }],
+  },
+};
