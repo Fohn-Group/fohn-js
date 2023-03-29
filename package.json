@@ -2,8 +2,10 @@
   "name": "fohn-ui",
   "version": "1.0.0",
   "description": "Javascript library for Fohn-Ui php framework.",
-  "main": "lib/fohn-ui.js",
+  "main": "dist/fohn-ui.min.js",
+  "files": ["dist/**/*"],
   "scripts": {
+    "prepare": "npm run build-dist",
     "build": "webpack --env production",
     "build-dist": "webpack --env distribution",
     "dev": "webpack --progress --watch --env development",
