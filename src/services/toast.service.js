@@ -21,33 +21,49 @@ class ToastService {
         isReady: false,
         queue: [],
       }
-      // Create Toast app on document load.
-      window.addEventListener("load", () => {
-        const toastApp = createApp({
-          template: '<div></div>',
-          data() {return {}},
-          mounted() {
-            // make sure toastApp is ready to go.
-            setTimeout(() => {
-              fohn.toastService.markAsReady();
-              fohn.toastService.flush();
-            }, 100);
-          }
-        });
-        toastApp.use(Toast, {container: document.querySelector('#fohn-toast')});
-        toastApp.mount('#fohn-toast');
-      });
     }
+  }
+
+  /**
+   * Create Toast App using Toast vue-toastification.
+   *
+   * @param toastContainerSelector
+   * @returns {{}}
+   */
+  enableToastNotification(toastContainerSelector) {
+    const toastApp = createApp({
+      props: {
+        toastService: this.instance,
+      },
+      template: '<div></div>',
+      data() {return {} },
+      mounted() {
+        // make sure toastApp is ready to go.
+        setTimeout(() => {
+          this.toastService.markAsReady();
+          this.toastService.flush();
+        }, 200);
+      }
+    }, {toastService: this.instance});
+    toastApp.use(Toast, {container: document.querySelector(toastContainerSelector)});
+    toastApp.mount(toastContainerSelector);
   }
 
   markAsReady() {
     this.service.isReady = true;
   }
 
+  /**
+   * Add notifier to queue.
+   * @param notifier
+   */
   addQueue(notifier) {
     this.service.queue.push(notifier);
   }
 
+  /**
+   * Flush queue and display all notifier set in queue.
+   */
   flush() {
     this.service.queue.forEach((notifier) => {
       this.notify(notifier.title, notifier.message, notifier.options);
