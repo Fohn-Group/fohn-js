@@ -1,9 +1,80 @@
 # Fohn-ui js package
 
-The javascript package is necessary to run Fohn-ui. It provide necessary
-jQuery plugin needed for the framework and also provide app wide services.
+Javascript package for Fohn-Ui PHP framework.
 
-The package also export some functions via the fohn global object.
+### Install via cdn:
+
+This the default installation when using Fohn-Ui PHP framework. 
+
+```
+<script type="application/javascript" src="https://unpkg.com/fohn-ui@{VERSION}/dist/fohn-ui.min.js"></script>
+```
+
+### Install locally:
+
+You may want to create your own custom javascript integration to Fohn-Ui. Therefore, you would need 
+a local copy in order to build your own release. Then have Fohn-Ui to load your local copy instead 
+of the cdn version.
+
+Clone the git repository and install.
+
+```
+git clone https://github.com/Fohn-Group/fohn-js.git
+cd fohn-js
+npm install
+```
+
+Adjust the webpack.config.js outputDir value to where you want build file to be placed.
+
+```
+module.exports = (env) => {
+  
+  const isProduction = env.production || env.distribution;
+  const srcDir = path.resolve(__dirname, './src');
+  const outputDir = PATH_TO_PUBLIC_FOLDER;
+    // rest of configuraiton
+}
+```
+
+Run development mode ``npm run dev`` or production mode `npm run build`
+
+### Install within your own package.
+
+If you need to include this package within your own, you can simply install via npm.
+
+```
+npm install fohn-ui
+```
+
+In order to be able to use existing Fohn-ui js component, jquery plugin or service, the package will need
+to export the fohn library for Fohn-Ui php framework.
+
+```
+import fohn from 'fohn-ui';
+
+const myLib = {
+    fohn: fohn,
+}
+
+export default myLib;
+```
+
+Then in Fohn-Ui php framework simply set up the Ui service jsLibrary property:
+
+```
+Ui::service()->jsLibrary = 'myLib.fohn';
+```
+
+#### Note:
+Fohn uses jQuery as an external library. In order to work correctly, you will need to add the 
+external property to your package build in webpack.config.js.
+
+```
+module.exports = {
+    // Webpack config.
+    externals: { jQuery: 'jQuery'},
+}
+```
 
 ### Getting package version
 
@@ -58,64 +129,3 @@ The plugin can now by invoke using:
     // Change all div color text to green.
     $('div').myNameSpaceGreenify();
 ```
-
-## Developping and building package.
-
-You may change this package to suit your own needs.
-
-### Package installation
-
-First start by installing the package using npm install. 
-
-```
-    cd ui/js
-    npm install
-```
-
-### Development
-
-For development and debugging, simply use the "dev" script supply in package.json file by running this command:
-
-```
-    npm run dev
-```
-
-This command will output the fohn-ui.js file inside the /public directory including the .map file need for debugging
-the package. Once load in your page, code can be debugged in browser from the webpack source.
-
-Any change made to the source, will also be re-compile automatically when using the "dev" script.
-
-#### Analyzing bundle profile
-
-Bundle profile may be analyze using various tools. npm script are availabe for producing 
-the json file for this. 
-
-```
-    npm run profile
-```
-
-This command will create a profile json file `fohnjs-bundle-profile.json` with bundle information inside the profile folder. You can use this file with your 
-favorite bundle analyzer. 
-
-Another npm script is available for analyzing the bundle using the webpack-bundle-analyzer tool.
-
-```
-    npm run analyze-profile
-```
-
-Note: In order to use this script, make sure that the webpack-bundle-analyzer package is intall
-globally.
-
-```
-    npm install -g webpack-bundle-analyzer
-```
-
-### Production
-
-For production, simply use the "build" script supply in package.json.
-
-```
-    npm run build
-```
-
-This command will output the fohn-ui.min.js file, also in /public folder.
