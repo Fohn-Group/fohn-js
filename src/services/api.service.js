@@ -55,7 +55,7 @@ class ApiService {
     const response  = this.useApiFetch(url, options).json();
 
     response.onFetchError((error) => {
-      this.handleServerError(error, response.data?.value?.exceptionHtml);
+      this.handleServerError(error.message, response.data?.value?.exceptionHtml);
     });
 
     return response;
@@ -88,7 +88,7 @@ class ApiService {
   }
 
   handleServerError(error, html) {
-    console.error(error.message);
+    console.error(error);
     vueService.tryDisplayException('fohn-exception-dialog', html  || 'Server Error: Check console output for more information.');
   }
 }

@@ -32,7 +32,7 @@ module.exports = (env) => {
   // determine which mode
   const isProduction = env.production || env.distribution;
   const srcDir = path.resolve(__dirname, './src');
-  const outputDir = env.distribution ? path.resolve(__dirname, './dist') : path.resolve(__dirname, '../ui/public');
+  const outputDir = env.distribution ? path.resolve(__dirname, './dist') : path.resolve(__dirname, '../fohn-ui/public');
   const libraryName = 'fohn';
   const filename = libraryName + '-ui';
 
