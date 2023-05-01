@@ -89,6 +89,8 @@ const useFilterModeSearch = (filterValue, loadItems) => {
     return loadItems.value.filter( (item ) => item.label.toLowerCase().includes(value.toLowerCase()));
   })
 };
+
+// eslint-disable-next-line
 const useAsyncFetchItems = (url, select, loadItems) => {
   return async (payload) => {
     const options = {
@@ -102,6 +104,7 @@ const useAsyncFetchItems = (url, select, loadItems) => {
   }
 }
 
+// eslint-disable-next-line
 const queryItems = async (url, payload) => {
   const options = {
     method: 'POST',

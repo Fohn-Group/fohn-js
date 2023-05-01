@@ -26,6 +26,7 @@ const directives = [
 ];
 
 // Return async component that will load on demand.
+// eslint-disable-next-line
 const componentFactory = (name, jsLoader) => defineAsyncComponent({
   loader: () => jsLoader().then((r) => { fohn.vueService.markComponentLoaded(name); return r; }),
   loadingComponent: loaderComponent,

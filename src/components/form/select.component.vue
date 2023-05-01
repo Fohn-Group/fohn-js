@@ -144,7 +144,6 @@ export default {
     const debounceFetchItems = useDebounceFn((label) => {
       if (label) {
         fetchItems({ action: 'query', fohnSelect_q: label }, () => {
-          console.log('callback');
           select.isOpen = true;
         });
       }

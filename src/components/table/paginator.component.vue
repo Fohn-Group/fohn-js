@@ -101,7 +101,7 @@ export default {
     };
 
     const goToPage = (pageNumber) => {
-      emitPageRequest(pageNumber);
+      emitPageRequest(pageNumber < 1 ? 1 : pageNumber);
     };
 
     return {

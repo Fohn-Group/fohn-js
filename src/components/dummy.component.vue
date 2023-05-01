@@ -19,7 +19,6 @@ export default {
     const { phrase } = toRefs(props);
 
     onMounted( ()=> {
-      console.log('moounting dummy');
     });
 
     return {
