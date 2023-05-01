@@ -23,9 +23,13 @@ export default {
     storeId: String,
     dataUrl: String,
     itemsPerPage: Number,
+    keepTableState: {
+      type: Boolean,
+      default: true,
+    }
   },
   setup(props, { attrs, slots, emit }) {
-    const { columns, dataUrl, searchDebounceValue, storeId } = props;
+    const { columns, dataUrl, searchDebounceValue, storeId, keepTableState } = props;
     const rows = ref([]);
     const isFetching = ref(false);
     const currentPage = ref(1);
@@ -41,19 +45,24 @@ export default {
       tableStore.searchItems(query);
     }, searchDebounceValue);
 
-    tableStore.url = dataUrl;
-    tableStore.itemsPerPage = itemsPerPage.value;
+    tableStore.setDataUrl(dataUrl);
+    if (!keepTableState) {
+      tableStore.setCurrentPage(1);
+      tableStore.setItemsPerPage(itemsPerPage);
+      tableStore.setCurrentQuery('');
+      tableStore.setSort({columnName: '', direction: 'none'});
+    }
 
     // subscribe to store change event.
     tableStore.$subscribe((mutation, state) => {
       rows.value = [...state.currentRows];
       isFetching.value = state.isFetching;
-      currentPage.value = state.currentPage;
+      currentPage.value = state.tableState.currentPage;
       totalItems.value = state.totalItems;
-      sortColumn.value = state.sortColumn;
-      sortDirection.value = state.sortDirection;
-      itemsPerPage.value = state.itemsPerPage;
-      query.value = state.currentQuery;
+      sortColumn.value = state.tableState.sort.columnName;
+      sortDirection.value = state.tableState.sort.direction;
+      itemsPerPage.value = state.tableState.itemsPerPage;
+      query.value = state.tableState.currentQuery;
     });
 
     const loadPage = (pageNumber) => {
@@ -61,7 +70,7 @@ export default {
     };
 
     const setItemsPerPage = (itemsPerPage) => {
-      tableStore.itemsPerPage = itemsPerPage;
+      tableStore.setItemsPerPage(itemsPerPage);
       tableStore.loadPage(1);
     }
 
@@ -82,7 +91,7 @@ export default {
     }
 
     onMounted(() => {
-      tableStore.loadPage(1);
+      tableStore.fetchItems();
     });
 
     return {

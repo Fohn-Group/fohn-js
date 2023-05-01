@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { useLocalStorage } from "@vueuse/core";
 import apiService from "../../services/api.service";
 import {utils} from "../../utils";
 import {watch} from "vue";
@@ -15,35 +16,40 @@ export const useTableStoreFactory = (id) => {
   return defineStore(id, {
     state: () => ({
       url: null,
-      currentPage: 1,
-      currentQuery: '',
+      tableState: useLocalStorage(id + '.tableState', {
+        currentPage: 1,
+        currentQuery: '',
+        itemsPerPage: 10,
+        sort: {
+          columnName: '',
+          direction: 'none',
+        }
+      }),
       currentRows: [],
       totalItems: 0,
-      itemsPerPage: 10,
       isFetching: false,
-      sortColumn: '',
-      sortDirection: 'none',
     }),
     getters: {
     },
     actions: {
       /**
        * Return an apiService useFetch response.
-       * @param url
+       * @param args = Get argument to pass to url.
        * @returns {UseFetchReturn<*>&PromiseLike<UseFetchReturn<*>>}
        */
-      fetchItems() {
+      fetchItems(args = {}) {
         const options = {
           method: 'POST',
           body: utils().json().stringify({
-            page: this.currentPage,
-            _q: this.currentQuery,
-            sorting: {columnName: this.sortColumn, direction: this.sortDirection},
-            ipp: this.itemsPerPage,
+            page: this.tableState.currentPage,
+            _q: this.tableState.currentQuery,
+            sorting: this.tableState.sort,
+            ipp: this.tableState.itemsPerPage,
           }),
         }
 
-        const { isFetching, data } = apiService.fetchAsResponse(this.url, options);
+        const url = fohn.utils().url().appendParams(this.url, args);
+        const { isFetching, data } = apiService.fetchAsResponse(url, options);
 
         watch(isFetching, (inProgress) => {
           this.isFetching = inProgress;
@@ -72,27 +78,40 @@ export const useTableStoreFactory = (id) => {
         })];
       },
       loadPage(pageNumber) {
-        this.currentPage = pageNumber;
+        this.tableState.currentPage = pageNumber;
         this.fetchItems();
       },
       sortTable(columnName, dir = '') {
         if (!dir) {
-          const direction = determineSortDirection(columnName, this.sortColumn, this.sortDirection);
-          this.sortColumn = direction === 'none' ? '' : columnName;
-          this.sortDirection = direction;
+          // eslint-disable-next-line max-len
+          const direction = determineSortDirection(columnName, this.tableState.sort.columnName, this.tableState.sort.direction);
+          this.tableState.sort.columnName = direction === 'none' ? '' : columnName;
+          this.tableState.sort.direction = direction;
         } else {
-          this.sortDirection = dir;
-          this.sortColumn = columnName;
+          this.tableState.sort.direction = dir;
+          this.tableState.sort.columnName = columnName;
         }
 
         this.fetchItems();
       },
       searchItems(query) {
-        if (query !== this.currentQuery) {
-          this.currentQuery = query;
-          this.currentPage = 1;
+        if (query !== this.tableState.currentQuery) {
+          this.tableState.currentQuery = query;
+          this.tableState.currentPage = 1;
           this.fetchItems();
         }
+      },
+      setItemsPerPage(ipp) {
+        this.tableState.itemsPerPage = ipp;
+      },
+      setCurrentQuery(query) {
+        this.tableState.currentQuery = query;
+      },
+      setCurrentPage(pageNumber) {
+        this.tableState.currentPage = pageNumber;
+      },
+      setSort(sort) {
+        this.tableState.sort = sort;
       },
       getCellValue(id, cellName) {
         const index = this.currentRows.findIndex((row => id === row.id));
@@ -101,6 +120,9 @@ export const useTableStoreFactory = (id) => {
         }
         console.warn('Unable to find value for cell: ' + cellName);
         return '';
+      },
+      setDataUrl(url) {
+        this.url = url;
       },
     },
   });
