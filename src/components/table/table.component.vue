@@ -86,6 +86,13 @@ export default {
       debounceSearch('');
     }
 
+    /**
+     * Execute a table action, i.e. call a javascript function pass into props.action.
+     * The function is executed with the row id as first param.
+     *
+     * @param actionName
+     * @param id
+     */
     const executeAction = (actionName, id) => {
       props.actions[actionName](id);
     }
