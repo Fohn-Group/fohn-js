@@ -1,6 +1,5 @@
 import {createApp, defineAsyncComponent, onMounted, ref} from 'vue';
 import { createPinia } from 'pinia';
-import VueFlatPickr from 'vue-flatpickr-component';
 import ClickOutside from '../directives/click-outside.directive';
 import { focus, resize, esc } from '../directives/commons.directive';
 import Components from '../components/components-install';
@@ -110,7 +109,6 @@ class VueService {
 
     app.use(this.piniaStore);
     app.use(Components);
-    app.use(VueFlatPickr);
     // setup fohn custom directives.
     directives.forEach((directive) => {
       app.directive(directive.name, directive.def);

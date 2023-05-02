@@ -18,8 +18,14 @@ class ApiService {
         options: {
           beforeFetch({ options }) {
             options.headers['x-custom-header'] = '__fohn-ajax-request';
+
             return { options }
           },
+          onFetchError( ctx) {
+            apiService.handleServerError(ctx.error.message, ctx.data?.exceptionHtml);
+
+            return ctx;
+          }
         },
       });
     }
@@ -52,13 +58,7 @@ class ApiService {
    */
   fetchAsResponse(url, options) {
 
-    const response  = this.useApiFetch(url, options).json();
-
-    response.onFetchError((error) => {
-      this.handleServerError(error.message, response.data?.value?.exceptionHtml);
-    });
-
-    return response;
+    return this.useApiFetch(url, options).json();
   }
 
   /**
@@ -78,17 +78,13 @@ class ApiService {
    * @returns {Promise<T>}
    */
   async fetchAsResult(url, options) {
-    const { error, data } = await this.useApiFetch(url, options).json();
-
-    if (error.value) {
-      this.handleServerError(error.value, data.value?.exceptionHtml);
-    }
+    const { data } = await this.useApiFetch(url, options).json();
 
     return data.value;
   }
 
   handleServerError(error, html) {
-    console.error(error);
+    console.warn(error);
     vueService.tryDisplayException('fohn-exception-dialog', html  || 'Server Error: Check console output for more information.');
   }
 }

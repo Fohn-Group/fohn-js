@@ -1,6 +1,6 @@
 {
   "name": "fohn-ui",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Javascript library for Fohn-Ui php framework.",
   "main": "dist/fohn-ui.min.js",
   "files": [
@@ -42,7 +42,7 @@
     "@babel/runtime": "^7.16.3",
     "@headlessui/vue": "^1.4.2",
     "@vue/compiler-sfc": "^3.2.24",
-    "@vueuse/core": "^9.0.0",
+    "@vueuse/core": "^10.1.2",
     "core-js": "^3.8.3",
     "locutus": "^2.0.14",
     "lodash.debounce": "^4.0.8",
@@ -51,7 +51,7 @@
     "mitt": "^3.0.0",
     "pinia": "^2.0.12",
     "vue": "^3.2.24",
-    "vue-flatpickr-component": "^9.0.8",
+    "vue-flatpickr-component": "^11.0.3",
     "vue-toastification": "^2.0.0-rc.5"
   }
 }

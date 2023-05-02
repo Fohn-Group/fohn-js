@@ -1,7 +1,6 @@
 import Base from './base.component.vue';
 import Form from './form/form.component.vue';
 import Control from './form/control.component.vue';
-import DatePicker from './share/date-picker.component';
 import Spinner from './utils/spinner.component.vue';
 import Select from './form/select.component.vue';
 import Radio from './form/radio.component.vue';
@@ -15,13 +14,14 @@ import ExceptionModal from './modal/exception-modal.component.vue';
 import TablePaginator from './table/paginator.component.vue';
 import Dummy from './dummy.component.vue';
 import Modal from './modal/modal.component.vue';
+import flatPickr from "vue-flatpickr-component";
 
 export default {
   install: (app, options) => {
+    app.component('flat-pickr', flatPickr);
     app.component('fohn-vue', Base);
     app.component('fohn-form', Form);
     app.component('fohn-control', Control);
-    app.component('fohn-date-picker', DatePicker);
     app.component('fohn-spinner', Spinner);
     app.component('fohn-select', Select);
     app.component('fohn-radio', Radio);

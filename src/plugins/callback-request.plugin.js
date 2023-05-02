@@ -26,7 +26,6 @@ export default class CallbackRequest extends BasePlugin {
     }
     fetchOptions.body = JSON.stringify(Object.assign(payload, store));
 
-
     // Allow user to confirm if available.
     if (confirm) {
       // todo open a vue modal confirmation.
@@ -37,11 +36,11 @@ export default class CallbackRequest extends BasePlugin {
       response = this.sendRequest(this.$el, uri, fetchOptions);
     }
 
-    response.then(({success, jsRendered}) => {
-      if (success && jsRendered) {
-        apiService.evalResponse(jsRendered, this.$el);
+    response.then((resp) => {
+      if (resp?.success && resp?.jsRendered) {
+        apiService.evalResponse(resp.jsRendered, this.$el);
       }
-    }).catch((e) => {console.error(e)});
+    });
   }
 }
 
