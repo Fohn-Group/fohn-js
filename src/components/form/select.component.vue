@@ -98,7 +98,7 @@ export default {
     watch(modelValue, (newValue) => {
       select.value = newValue;
       if (newValue && !select.label) {
-        fetchItems(props.requestUrl, {action: 'init', value: newValue});
+        fetchItems({action: 'init', value: newValue});
       }
     });
 
