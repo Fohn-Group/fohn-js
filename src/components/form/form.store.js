@@ -2,8 +2,8 @@ import {defineStore} from "pinia";
 import apiService from "../../services/api.service";
 import { watch } from "vue";
 
-export const useFormStoreFactory = (formStoreId) => {
-  return defineStore(formStoreId, {
+export const useFormStoreFactory = (id) => {
+  const store = defineStore(id, {
     state: () => ({
       submitUrl: null,
       valuesUrl: null,
@@ -146,4 +146,8 @@ export const useFormStoreFactory = (formStoreId) => {
       }
     }
   });
+
+  fohn.vueService.addStore(id, store);
+
+  return store;
 }
