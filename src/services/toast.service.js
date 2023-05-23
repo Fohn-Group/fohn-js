@@ -16,7 +16,6 @@ class ToastService {
     return this.instance;
   }
 
-  console.log('');
   constructor() {
     if (!this.instance) {
       this.instance = this;
