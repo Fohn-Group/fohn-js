@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import {utils} from "../../utils";
 import apiService from "../../services/api.service";
+import vueService from "../../services/vue.service";
 
 /**
  * Return a Pinia store definition function.
@@ -97,7 +98,7 @@ export const useModalStoreFactory = (id) => {
     },
   });
 
-  fohn.vueService.addStore(id, store);
+  vueService.addStore(id, store);
 
   return store;
 }
