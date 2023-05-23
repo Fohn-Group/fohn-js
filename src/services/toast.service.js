@@ -1,11 +1,13 @@
 import { createApp } from "vue";
 import Toast, { useToast } from "vue-toastification";
 import UiToast from '../components/toast.component.vue';
+import {utils} from "../utils";
 
 /**
  * Singleton class
- * Wrapper object for vue-toastification package.
- * Create Toast using our own component while using vue-toastification package options.
+ * Service that display notification using Vue-Toastification packages.
+ * Create Toast using our own component.
+ * Any Vue-Toastification options may be used.
  *
  */
 
@@ -76,9 +78,12 @@ class ToastService {
    * Display toast using our own component.
    *
    */
-  notify(title, message, options = {}) {
+  notify(title, message = '', options = {}, sanitize = true) {
+
+    const htmlContent = sanitize ? utils().text().sanitize(message) : message;
+
     if (!this.service.isReady) {
-      this.addQueue({title: title, message: message, options: options});
+      this.addQueue({title: title, message: htmlContent, options: options});
       return;
     }
 
@@ -86,7 +91,7 @@ class ToastService {
       component: UiToast,
       props: {
         title: title,
-        message: message || '',
+        message: htmlContent,
       }
     };
 
