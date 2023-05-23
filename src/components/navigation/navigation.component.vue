@@ -14,7 +14,7 @@
 
 <script>
 import { computed, onMounted, ref } from 'vue';
-import { useNavigationStore } from './navigation.store';
+import { useNavigationStoreFactory } from './navigation.store';
 
 export default {
   name: 'fohn-navigation',
@@ -39,7 +39,7 @@ export default {
     const method = {};
     const isOpen = ref(false);
     const inMobileMode = ref(false);
-    const navigationStore = useNavigationStore();
+    const navigationStore = useNavigationStoreFactory('Navigation')();
     const transitionReady = ref(false);
     const breakPointValue = {
       sm: 640,

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import {utils} from "../../utils";
 import apiService from "../../services/api.service";
+import vueService from "../../services/vue.service";
 
 /**
  * Return a Pinia store definition function.
@@ -9,11 +10,11 @@ import apiService from "../../services/api.service";
  *
  *
  *
- * @param modalStoreId
+ * @param id
  * @returns {StoreDefinition<*, {totalItems: null, itemsPerPage: null, currentQuery: string, currentPage: number}, {}, {fetchItems(*): (UseFetchReturn<*>&PromiseLike<UseFetchReturn<*>>)}>|(UseFetchReturn<*>&PromiseLike<UseFetchReturn<*>>)}
  */
-export const useModalStoreFactory = (modalStoreId) => {
-  return defineStore(modalStoreId, {
+export const useModalStoreFactory = (id) => {
+  const store = defineStore(id, {
     state: () => ({
       callbackPayload: {},
       contentUrl: '',
@@ -96,4 +97,8 @@ export const useModalStoreFactory = (modalStoreId) => {
       },
     },
   });
+
+  vueService.addStore(id, store);
+
+  return store;
 }

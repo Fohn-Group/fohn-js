@@ -9,7 +9,7 @@ import { createPlugin, pluginFactory } from './pluginFactory';
 import vueService from './services/vue.service';
 import dataService from './services/data.service';
 import apiService from "./services/api.service";
-import { options, eventBus, utils, store } from './utils';
+import { options, eventBus, utils } from './utils';
 import serverEventService from "./services/server-event.service";
 import toastService from "./services/toast.service";
 
@@ -21,7 +21,6 @@ const fohn = {};
 fohn.version = () => __VERSION__;
 fohn.options = options;
 fohn.eventBus = eventBus;
-fohn.store = store;
 fohn.utils = utils;
 fohn.debounceTimeout = null;
 
