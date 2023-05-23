@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import vueService from "../../services/vue.service";
 
 export const useNavigationStoreFactory = (id) => {
   const store = defineStore(id, {
