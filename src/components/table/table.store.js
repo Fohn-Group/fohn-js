@@ -13,7 +13,7 @@ import {watch} from "vue";
  * @returns {StoreDefinition<*, {totalItems: null, itemsPerPage: null, currentQuery: string, currentPage: number}, {}, {fetchItems(*): (UseFetchReturn<*>&PromiseLike<UseFetchReturn<*>>)}>|(UseFetchReturn<*>&PromiseLike<UseFetchReturn<*>>)}
  */
 export const useTableStoreFactory = (id) => {
-  return defineStore(id, {
+  const store = defineStore(id, {
     state: () => ({
       url: null,
       tableState: useLocalStorage(id + '.tableState', {
@@ -126,6 +126,9 @@ export const useTableStoreFactory = (id) => {
       },
     },
   });
+  fohn.vueService.addStore(id, store);
+
+  return store;
 };
 
 function determineSortDirection(newColumnName, oldColumName, currentDirection, newDirection = null) {

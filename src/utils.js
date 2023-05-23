@@ -1,8 +1,4 @@
 import mitt from 'mitt';
-import { useNavigationStore } from './components/navigation/navigation.store';
-import { useModalStoreFactory } from "./components/modal/modal.store";
-import { useFormStoreFactory } from "./components/form/form.store";
-import {useTableStoreFactory} from "./components/table/table.store";
 
 /**
  * Define global options.
@@ -40,18 +36,6 @@ const eventBus = () => {
   };
 };
 
-/**
- * Utility in order to retrieve fohn vue component Pinia store.
- * Ex: generating an open navigation event from navigationStore
- *     fohn.store().getNavigationStore().openNavigation()
- */
-const store = () => ({
-  getFormStore: (formStoreId) => useFormStoreFactory(formStoreId)(),
-  getTableStore: (tableStoreId) => useTableStoreFactory(tableStoreId)(),
-  getModalStore: (modalStoreId) => useModalStoreFactory(modalStoreId)(),
-  getNavigationStore: () => useNavigationStore(),
-});
-
 /*
 * Utilities function that you can execute
 * from fohn context. Usage: fohn.utils().date().parse('string');
@@ -79,6 +63,13 @@ const utils = () => ({
       }
       return value;
     }),
+  }),
+  text: () => ({
+    sanitize: (text) => {
+      const element = document.createElement('div');
+      element.innerText = text;
+      return element.innerHTML;
+    }
   }),
   date: () => ({
     // fix date parsing for different time zone if time is not supply.
@@ -135,5 +126,5 @@ const utils = () => ({
 });
 
 export {
-  options, eventBus, utils, store,
+  options, eventBus, utils,
 };

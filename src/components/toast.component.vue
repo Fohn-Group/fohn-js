@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>{{title}}</h1>
-    <div>{{message}}</div>
+    <div v-html="message"></div>
   </div>
 </template>
 
@@ -19,7 +19,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

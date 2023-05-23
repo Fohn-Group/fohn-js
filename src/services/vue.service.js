@@ -46,6 +46,7 @@ class VueService {
     if (!VueService.instance) {
       this.vues = new Map();
       this.piniaStore = createPinia();
+      this.stores = new Map();
       VueService.instance = this;
     }
   }
@@ -166,6 +167,14 @@ class VueService {
      */
   areComponentsLoaded() {
     return this.vues.filter((component) => component.isLoaded === false).length === 0;
+  }
+
+  addStore(id, store) {
+    this.stores.set(id, store);
+  }
+
+  getStore(id) {
+    return this.stores.get(id)();
   }
 }
 
