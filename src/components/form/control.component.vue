@@ -15,16 +15,13 @@
  * }
  *
  */
-import { computed, ref, watch, onMounted } from 'vue';
-import { useDebounceFn } from "@vueuse/core";
-import { getInputAttrs } from './composable/control';
+import {computed, ref, watch, onMounted, reactive} from 'vue';
+import {useDebounceFn} from "@vueuse/core";
 import { useFormStoreFactory } from "./form.store";
 
 export default {
   name: 'fohn-control',
   props: {
-    ctrlName: String,
-    ctrlValue: [Number, String, Array, Object, Boolean],
     caption: {
       type: String,
       default: '',
@@ -32,26 +29,6 @@ export default {
     hint: {
       type: String,
       default: '',
-    },
-    type: {
-      type: String,
-      default: 'text',
-    },
-    placeholder: {
-      type: String,
-      default: '',
-    },
-    isRequired: {
-      type: Boolean,
-      default: false,
-    },
-    isReadOnly: {
-      type: Boolean,
-      default: false,
-    },
-    isDisabled: {
-      type: Boolean,
-      default: false,
     },
     onChanges: {
       type: Array,
@@ -61,29 +38,21 @@ export default {
       type: String,
       default: '',
     },
-    step: {
-      type: String,
-      default: ''
-    },
-    min: {
-      type: Number,
-      default: 0
-    },
-    max: {
-      type: Number,
-      default: 100
+    htmlInputAttrs: {
+      type: Object,
     },
   },
   setup: function (props, { attrs, slots, emit }) {
     const { caption, hint, formStoreId } = props;
+    const inputAttrs = reactive(props.htmlInputAttrs);
     const container = ref(null);
-    const inputAttrs = getInputAttrs(props);
+
     const formStore = useFormStoreFactory(formStoreId || '__form_generic')();
     // onChanges is an array of object {fn: function to execute, debounceValue: debounce time}.
     const onChangeHandlers = props.onChanges;
 
     formStore.$subscribe( (mutation, state) => {
-      inputAttrs.value = state.controls.get(props.ctrlName).value;
+      inputAttrs.value = state.controls.get(inputAttrs.name).value;
     });
 
     /**
@@ -120,7 +89,7 @@ export default {
 
     const toggleType = (newType) => {
       if (inputAttrs.type === newType) {
-        inputAttrs.type = props.type;
+        inputAttrs.type = props.htmlInputAttrs.type;
       } else {
         inputAttrs.type = newType;
       }
