@@ -15,16 +15,13 @@
  * }
  *
  */
-import { computed, ref, watch, onMounted } from 'vue';
-import { useDebounceFn } from "@vueuse/core";
-import { getInputAttrs } from './composable/control';
+import {computed, ref, watch, onMounted, reactive} from 'vue';
+import {useDebounceFn} from "@vueuse/core";
 import { useFormStoreFactory } from "./form.store";
 
 export default {
   name: 'fohn-control',
   props: {
-    ctrlName: String,
-    ctrlValue: [Number, String, Array, Object, Boolean],
     caption: {
       type: String,
       default: '',
@@ -33,58 +30,31 @@ export default {
       type: String,
       default: '',
     },
-    type: {
-      type: String,
-      default: 'text',
-    },
-    placeholder: {
-      type: String,
-      default: '',
-    },
-    isRequired: {
-      type: Boolean,
-      default: false,
-    },
-    isReadOnly: {
-      type: Boolean,
-      default: false,
-    },
-    isDisabled: {
-      type: Boolean,
-      default: false,
-    },
     onChanges: {
       type: Array,
       default: () => [],
     },
     formStoreId: {
       type: String,
-      default: '',
+      default: '__form_generic',
     },
-    step: {
-      type: String,
-      default: ''
-    },
-    min: {
-      type: Number,
-      default: 0
-    },
-    max: {
-      type: Number,
-      default: 100
+    htmlInputAttrs: {
+      type: Object,
     },
   },
   setup: function (props, { attrs, slots, emit }) {
     const { caption, hint, formStoreId } = props;
+    const inputAttrs = reactive(props.htmlInputAttrs);
     const container = ref(null);
-    const inputAttrs = getInputAttrs(props);
-    const formStore = useFormStoreFactory(formStoreId || '__form_generic')();
+
+    // Create store and subscribed to control changes.
+    const formStore = useFormStoreFactory(formStoreId)();
+    formStore.$subscribe( (mutation, state) => {
+      inputAttrs.value = state.controls.get(inputAttrs.name).value;
+    });
+
     // onChanges is an array of object {fn: function to execute, debounceValue: debounce time}.
     const onChangeHandlers = props.onChanges;
-
-    formStore.$subscribe( (mutation, state) => {
-      inputAttrs.value = state.controls.get(props.ctrlName).value;
-    });
 
     /**
      * Update new input value in formStore
@@ -110,22 +80,18 @@ export default {
      * Errors are provide by form parent component via formStore.
      */
     const errorMsg = computed(() => {
-      let msg = '';
       if (formStore.errors.has(inputAttrs.name)) {
-        msg = formStore.errors.get(inputAttrs.name).msg;
+        return formStore.errors.get(inputAttrs.name).msg;
       }
 
-      return msg;
+      return '';
     });
 
     const toggleType = (newType) => {
-      if (inputAttrs.type === newType) {
-        inputAttrs.type = props.type;
-      } else {
-        inputAttrs.type = newType;
-      }
+      inputAttrs.type = (inputAttrs.type === newType) ? props.htmlInputAttrs.type : newType;
     };
 
+    // Check for input value changes.
     watch(() =>  inputAttrs.value, (newValue) => {
       formStore.clearError(inputAttrs.name);
       onValueChange(newValue);
