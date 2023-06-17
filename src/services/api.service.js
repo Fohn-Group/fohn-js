@@ -18,6 +18,8 @@ class ApiService {
         options: {
           beforeFetch({ options }) {
             options.headers['x-custom-header'] = '__fohn-ajax-request';
+            options.headers['Content-Type'] = 'application/json';
+            options.headers['x-csfr-token'] = document.head.querySelector('meta[name=csfr-token]')?.content;
 
             return { options }
           },
