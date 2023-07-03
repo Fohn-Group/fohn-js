@@ -57,6 +57,9 @@ export const useTableStoreFactory = (id) => {
 
         watch(data, (newData) => {
           const results = newData?.results || {};
+          if (results.jsRendered) {
+            apiService.evalResponse(results.jsRendered);
+          }
           this.totalItems = results?.totalItems || 0;
           this.currentRows = results?.rows || [];
         });

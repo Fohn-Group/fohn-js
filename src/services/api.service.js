@@ -1,5 +1,6 @@
 import { createFetch } from '@vueuse/core';
 import vueService from "./vue.service";
+import fohn from "../fohn-ui";
 
 /**
  * Singleton class
@@ -24,7 +25,11 @@ class ApiService {
             return { options }
           },
           onFetchError( ctx) {
-            apiService.handleServerError(ctx.error.message, ctx.data?.exceptionHtml);
+            if (ctx.response.status >= 300 && ctx.response.status <= 499) {
+              fohn.utils().browser().redirect(ctx.data?.url || '/');
+            } else {
+              apiService.handleServerError(ctx.error.message, ctx.data?.exceptionHtml);
+            }
 
             return ctx;
           }
