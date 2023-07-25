@@ -15,19 +15,12 @@ export default {
   setup: function (props, { attrs, slots, emit }) {
     const { flatpickr, method } = props;
     const modelValue = ref(props.modelValue);
-    // method.setDate = (d) => {
-    //   console.log(d);
-    // }
+
     method.onChange = (s, d, t) => {
       modelValue.value = d;
     };
 
     return { flatpickr, modelValue, method };
   },
-  // methods: {
-  //   onDateChange: function(s,d,t,) {
-  //     console.log(s, d, t);
-  //   }
-  // }
 };
 </script>
