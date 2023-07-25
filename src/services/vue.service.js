@@ -88,8 +88,9 @@ class VueService {
    * Set default components to use with.
    * Inject default functionality.
    */
-  vueAppFactory( rootData ) {
+  vueAppFactory( rootData, componentName ) {
     const app = createApp({
+      name: componentName + '-app',
       setup: function() {
         const root = ref(null);
         const key = ref(0);
@@ -130,7 +131,7 @@ class VueService {
       this.vues.get(elementId).vm = null;
     }
 
-    const app = this.vueAppFactory(rootData);
+    const app = this.vueAppFactory(rootData, componentName);
     const vm = app.mount(elementId);
 
     this.vues.set(elementId, {
