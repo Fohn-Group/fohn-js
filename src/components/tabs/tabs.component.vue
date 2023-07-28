@@ -7,7 +7,7 @@ export default {
   name: 'fohn-tabs',
   props: {
     storeId: String,
-    initialTabIdx: {
+    activeTabIdx: {
       type: Number,
       default: 0,
     },
@@ -32,7 +32,7 @@ export default {
         tabsStore.registerTab(idx, tab);
       });
 
-      activate(props.initialTabIdx);
+      activate(props.activeTabIdx);
 
     });
 
