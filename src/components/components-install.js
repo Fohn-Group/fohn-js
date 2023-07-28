@@ -1,3 +1,4 @@
+import flatPickr from "vue-flatpickr-component";
 import Base from './base.component.vue';
 import Form from './form/form.component.vue';
 import Control from './form/control.component.vue';
@@ -16,10 +17,9 @@ import Dummy from './dummy.component.vue';
 import Modal from './modal/modal.component.vue';
 import Tabs from './tabs/tabs.component.vue';
 import Tab from './tabs/tab.component.vue';
-import flatPickr from "vue-flatpickr-component";
 
 const fohnComponents = [
-  {name: 'flat-picker', def:  flatPickr},
+  {name: 'flat-pickr', def:  flatPickr},
   {name: 'fohn-vue', def:  Base},
   {name: 'fohn-spinner', def:  Spinner},
   {name: 'fohn-form', def:  Form},
@@ -35,8 +35,8 @@ const fohnComponents = [
   {name: 'fohn-table-paginator', def:  TablePaginator},
   {name: 'fohn-modal', def:  Modal},
   {name: 'fohn-ui-exception', def:  ExceptionModal},
-  {name: 'fohn-tabs', def:  Tabs},
   {name: 'fohn-tab', def:  Tab},
+  {name: 'fohn-tabs', def:  Tabs},
   {name: 'fohn-dummy', def:  Dummy},
 ]
 
