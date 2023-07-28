@@ -1,9 +1,10 @@
-import {createApp, defineAsyncComponent, onMounted, ref} from 'vue';
+import {createApp, defineAsyncComponent, ref} from 'vue';
 import { createPinia } from 'pinia';
 import ClickOutside from '../directives/click-outside.directive';
 import { focus, resize, esc } from '../directives/commons.directive';
 import Components from '../components/components-install';
 import jQuery from 'jQuery';
+import fohn from "../fohn-ui";
 
 // Vue loader component to display while dynamic component is loading.
 const loaderComponent = {
@@ -92,20 +93,13 @@ class VueService {
     const app = createApp({
       name: componentName + '-app',
       setup: function() {
-        const root = ref(null);
         const key = ref(0);
-
-        onMounted(() => {
-          if (root.value)  {
-            root.value.$el.classList.remove('invisible');
-          }
-        });
 
         const forceRerender = () => {
           key.value += 1;
         }
 
-        return { ...rootData, root, key, forceRerender, jQuery, fohn };
+        return { ...rootData, key, forceRerender, jQuery, fohn };
       }
     });
 
