@@ -30,7 +30,6 @@ export default {
     const {name, onActiveHandlers, initKeyFn, showKeyFn, hideKeyFn} = props;
     const tabContent = ref(null);
     const tabsStore = useTabsStoreFactory(props.tabStoreId)();
-    const {isTabDisable} = tabsStore;
 
     tabsStore.$subscribe((mutation, state) => {
       if (state.activeTab === name) {
@@ -43,13 +42,13 @@ export default {
     });
 
     const isActive = computed( () => name === tabsStore.activeTabName);
-    const isDisable = computed(() => isTabDisable(name));
+    const isDisabled = computed(() => tabsStore.getTab(name).disabled === true);
 
     onMounted(() => {
       executeHandlers(getHandlersForKey(onActiveHandlers, initKeyFn))
     });
 
-    return {tabContent, isActive, isDisable};
+    return {tabContent, isActive, isDisabled};
   },
 }
 
@@ -80,6 +79,6 @@ function executeHandlers(handlers) {
 
 <template>
   <div ref="tabContent" v-bind="$attrs">
-    <slot :isActive="isActive" :isDisable="isDisable">tab content</slot>
+    <slot :isActive="isActive" :isDisabled="isDisabled">tab content</slot>
   </div>
 </template>

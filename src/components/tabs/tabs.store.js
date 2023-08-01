@@ -14,41 +14,50 @@ import vueService from "../../services/vue.service";
 export const useTabsStoreFactory = (id) => {
   const store = defineStore(id, {
     state: () => ({
-      tabs: new Map(),
+      tabs: [], // an array of tab object i.e. {name: 'name', caption: 'Caption', disabled: false}
       activeTab: '',
       previousTab: '',
       currentIdx: 0,
     }),
     getters: {
       activeTabName: (state) => state.activeTab,
-      tabsList: (state) => state.tabs,
-      isTabDisable: (state) => {
-        const disables = Array.from(state.tabs.values()).filter((tab) => !tab.enable);
-
-        return (name) => disables.filter(tab => tab.name === name).length > 0;
-      },
     },
     actions: {
-      registerTab(tabIdx, tab) {
-        if (!tab?.enable) {
-          tab.enable = true;
-        }
-        this.tabs.set(tabIdx, tab);
+      getTab(name) {
+        return this.tabs[getTabIdxForName(this.tabs, name)];
+      },
+      registerTab(tab) {
+        this.tabs.push(tab);
       },
       activate(idx) {
-        this.previousTab = this.activeTab;
-        this.activeTab = this.tabs.get(idx).name;
-        this.currentIdx = idx;
+        if (!this.tabs[idx].disabled) {
+          this.previousTab = this.activeTab;
+          this.activeTab = this.tabs[idx].name;
+          this.currentIdx = idx;
+        }
       },
       activateByName(name) {
         this.activate(getTabIdxForName(this.tabs, name));
       },
       disable(idx) {
-        this.tabs.get(idx).enable = false;
+        if (!this.tabs[idx].disabled) {
+          this.tabs[idx].disabled = true;
+          if (this.currentIdx === idx) {
+            this.activate(0);
+          }
+        }
       },
       disableByName(name) {
         this.disable(getTabIdxForName(this.tabs, name));
-      }
+      },
+      enable(idx) {
+        if (this.tabs[idx].disabled) {
+          this.tabs[idx].disabled = false;
+        }
+      },
+      enableByName(name) {
+        this.enable(getTabIdxForName(this.tabs, name));
+      },
     },
   });
 

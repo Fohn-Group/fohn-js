@@ -1,7 +1,7 @@
 <script>
 
 import {useTabsStoreFactory} from "./tabs.store";
-import {onMounted, reactive, ref} from "vue";
+import {onMounted, ref} from "vue";
 import {storeToRefs} from "pinia";
 
 export default {
@@ -22,14 +22,14 @@ export default {
     const container = ref(null);
     const currentIndex = ref(0);
     const tabsStore = useTabsStoreFactory(storeId)();
-    let {tabsList} = storeToRefs(tabsStore);
+    const {tabs} = storeToRefs(tabsStore);
 
     tabsStore.$subscribe((mutation, state) => {
       currentIndex.value = state.currentIdx;
     });
 
-    props.tabsList.forEach((tab, idx) => {
-      tabsStore.registerTab(idx, tab);
+    props.tabsList.forEach((tab) => {
+      tabsStore.registerTab(tab);
     });
 
     const activate = (idx) => {
@@ -40,13 +40,13 @@ export default {
       activate(props.activeTabIdx);
     });
 
-    return {container, tabsList, currentIndex, activate}
+    return {container, tabs, currentIndex, activate}
   },
 }
 </script>
 
 <template>
   <div ref="container" v-bind="$attrs">
-    <slot :tabsList="tabsList" :currentIndex="currentIndex" :activate="activate">tabs</slot>
+    <slot :tabs="tabs" :currentIndex="currentIndex" :activate="activate">tabs</slot>
   </div>
 </template>
