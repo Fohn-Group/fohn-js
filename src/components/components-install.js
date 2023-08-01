@@ -1,3 +1,4 @@
+import flatPickr from "vue-flatpickr-component";
 import Base from './base.component.vue';
 import Form from './form/form.component.vue';
 import Control from './form/control.component.vue';
@@ -14,26 +15,35 @@ import ExceptionModal from './modal/exception-modal.component.vue';
 import TablePaginator from './table/paginator.component.vue';
 import Dummy from './dummy.component.vue';
 import Modal from './modal/modal.component.vue';
-import flatPickr from "vue-flatpickr-component";
+import Tabs from './tabs/tabs.component.vue';
+import Tab from './tabs/tab.component.vue';
+
+const fohnComponents = [
+  {name: 'flat-pickr', def:  flatPickr},
+  {name: 'fohn-vue', def:  Base},
+  {name: 'fohn-spinner', def:  Spinner},
+  {name: 'fohn-form', def:  Form},
+  {name: 'fohn-control', def:  Control},
+  {name: 'fohn-select', def:  Select},
+  {name: 'fohn-radio', def:  Radio},
+  {name: 'fohn-navigation', def:  Navigation},
+  {name: 'fohn-navigation-group', def:  NavigationGroup},
+  {name: 'fohn-table', def:  Table},
+  {name: 'fohn-header-cell', def:  HeaderCell},
+  {name: 'fohn-table-row', def:  TableRow},
+  {name: 'fohn-table-cell', def:  TableCell},
+  {name: 'fohn-table-paginator', def:  TablePaginator},
+  {name: 'fohn-modal', def:  Modal},
+  {name: 'fohn-ui-exception', def:  ExceptionModal},
+  {name: 'fohn-tab', def:  Tab},
+  {name: 'fohn-tabs', def:  Tabs},
+  {name: 'fohn-dummy', def:  Dummy},
+]
 
 export default {
   install: (app, options) => {
-    app.component('flat-pickr', flatPickr);
-    app.component('fohn-vue', Base);
-    app.component('fohn-form', Form);
-    app.component('fohn-control', Control);
-    app.component('fohn-spinner', Spinner);
-    app.component('fohn-select', Select);
-    app.component('fohn-radio', Radio);
-    app.component('fohn-navigation', Navigation);
-    app.component('fohn-navigation-group', NavigationGroup);
-    app.component('fohn-table', Table);
-    app.component('fohn-header-cell', HeaderCell);
-    app.component('fohn-table-row', TableRow);
-    app.component('fohn-table-cell', TableCell);
-    app.component('fohn-ui-exception', ExceptionModal);
-    app.component('fohn-table-paginator', TablePaginator);
-    app.component('fohn-dummy', Dummy);
-    app.component('fohn-modal', Modal);
+    fohnComponents.forEach((fohnComponent) => {
+      app.component(fohnComponent.name, fohnComponent.def);
+    })
   },
 };

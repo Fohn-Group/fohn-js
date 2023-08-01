@@ -34,6 +34,7 @@ class ToastService {
    */
   enableToastNotification(toastContainerSelector) {
     const toastApp = createApp({
+      name: 'fohn-toast-app',
       props: {
         toastService: this.instance,
       },
