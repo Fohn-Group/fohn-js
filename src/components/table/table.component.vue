@@ -3,14 +3,14 @@
  * Todo serve two different mode. Load all items and use fuse search internally or
  * use as it is now, loading items per page load.
  */
-import {onMounted, ref} from 'vue';
+import {onMounted, ref, provide} from 'vue';
 import debounce from 'lodash.debounce';
 import { useTableStoreFactory } from './table.store';
 
 export default {
   name: 'fohn-table',
   props: {
-    actions: {
+    rowActions: {
       type: Object,
     },
     searchDebounceValue: {
@@ -19,6 +19,10 @@ export default {
     },
     columns: {
       type: Array,
+    },
+    hasSelectableRows: {
+      type: Boolean,
+      default: false,
     },
     storeId: String,
     dataUrl: String,
@@ -29,7 +33,7 @@ export default {
     }
   },
   setup(props, { attrs, slots, emit }) {
-    const { columns, dataUrl, searchDebounceValue, storeId, keepTableState } = props;
+    const { columns, dataUrl, searchDebounceValue, storeId, keepTableState, hasSelectableRows } = props;
     const rows = ref([]);
     const isFetching = ref(false);
     const currentPage = ref(1);
@@ -38,6 +42,7 @@ export default {
     const itemsPerPage = ref(props.itemsPerPage);
     const totalItems = ref(0);
     const query = ref('');
+
     // each table get its own tableStore.
     const tableStore = useTableStoreFactory(storeId)();
 
@@ -87,19 +92,22 @@ export default {
     }
 
     /**
-     * Execute a table action, i.e. call a javascript function pass into props.action.
+     * Execute a table row action, i.e. call a javascript function pass into props.action.
      * The function is executed with the row id as first param.
      *
      * @param actionName
      * @param id
      */
-    const executeAction = (actionName, id) => {
-      props.actions[actionName](id);
+    const executeRowAction = (actionName, id) => {
+      props.rowActions[actionName](id);
     }
 
     onMounted(() => {
       tableStore.fetchItems();
     });
+
+    // have storeId available to children component
+    provide('tableStoreId', storeId);
 
     return {
       isFetching,
@@ -116,7 +124,8 @@ export default {
       sortTable,
       clearSearch,
       setItemsPerPage,
-      executeAction,
+      hasSelectableRows,
+      executeRowAction,
     };
   },
 };
@@ -139,7 +148,8 @@ export default {
         :sortTable="sortTable"
         :clearSearch="clearSearch"
         :setItemsPerPage="setItemsPerPage"
-        :executeAction="executeAction"
+        :executeRowAction="executeRowAction"
+        :hasSelectableRows="hasSelectableRows"
         v-bind="$attrs">table</slot>
   </div>
 </template>
