@@ -65,6 +65,9 @@ export const useModalStoreFactory = (id) => {
           this.fetchHtml(this.contentUrl, args);
         }
       },
+      setMessage(message) {
+        this.message = message;
+      },
       closeModal() {
         this.status = 'close';
         if (this.contentUrl && this.contentId) {
