@@ -26,10 +26,17 @@ export const useTableStoreFactory = (id) => {
         }
       }),
       currentRows: [],
+      selectedRows: new Set(),
       totalItems: 0,
       isFetching: false,
     }),
     getters: {
+      isRowSelected: (state) => {
+        return (id) => state.selectedRows.has(id);
+      },
+      hasRowSelected: (state) => {
+        return state.selectedRows.size > 0;
+      }
     },
     actions: {
       /**
@@ -74,6 +81,13 @@ export const useTableStoreFactory = (id) => {
             })
           }
         });
+      },
+      toggleRow(id) {
+        if(this.isRowSelected(id)) {
+          this.selectedRows.delete(id);
+        } else {
+          this.selectedRows.add(id);
+        }
       },
       deleteRow(id) {
         this.currentRows = [...this.currentRows.filter((tableRow) => {
@@ -127,6 +141,43 @@ export const useTableStoreFactory = (id) => {
       setDataUrl(url) {
         this.url = url;
       },
+      /**
+       * Callback server for the purpose of executing an action.
+       * Callback will trigger onTrigger event in TriggerCtrl.
+       */
+      executeAction(url, targetElement) {
+        const options = {
+          method: 'POST',
+          body: utils().json().stringify({
+            ids: Array.from(this.selectedRows),
+          }),
+        }
+
+        targetElement.classList.add('loading');
+        const { isFetching, data, onFetchFinally, onFetchError } = apiService.fetchAsResponse(url, options);
+
+        watch(isFetching, (inProgress) => {
+          this.isFetching = inProgress;
+        });
+
+        onFetchFinally( () => {
+          const results = data.value || {};
+          if (results.jsRendered) {
+            apiService.evalResponse(results.jsRendered);
+          }
+          if (results?.state?.reload) {
+            this.fetchItems();
+          }
+          if (results?.state?.keepSelection === false) {
+            this.selectedRows = new Set();
+          }
+          targetElement.classList.remove('loading');
+        });
+
+        onFetchError( (error) => {
+          console.error(error);
+        });
+      }
     },
   });
   fohn.vueService.addStore(id, store);
