@@ -45,8 +45,8 @@ export default {
       message.value = state.message;
     });
 
-    const closeModal = () => {
-      if (isClosable) {
+    const closeModal = (forceClose = false) => {
+      if (forceClose || isClosable) {
         modalStore.closeModal();
         maxHeight = false;
       }
