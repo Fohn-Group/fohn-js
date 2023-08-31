@@ -18,7 +18,8 @@ export default {
       default: 'close',
     }
   },
-  setup: function (props, extra) {
+  emits: ['onConfirm', 'onCancel'],
+  setup: function (props, { attrs, slots, emit }) {
     const { contentUrl, callbacks, storeId } = props;
     const modalTitle = ref(props.title);
     const hasRemoteContent = !!contentUrl;
@@ -52,6 +53,13 @@ export default {
       }
     }
 
+    const emitConfirm = (e) => {
+      emit('onConfirm', e);
+    }
+
+    const emitCancel = (e) => {
+      emit('onCancel', e);
+    }
     const openModal = () => {
       modalStore.openModal();
     }
@@ -88,6 +96,8 @@ export default {
       message,
       onCallback,
       hasRemoteContent,
+      emitConfirm,
+      emitCancel,
       isClosable,
     };
   },
@@ -107,6 +117,8 @@ export default {
         :message="message"
         :hasRemoteContent="hasRemoteContent"
         :isClosable="isClosable"
+        :confirm="emitConfirm"
+        :cancel="emitCancel"
         v-bind="$attrs">Modal
     </slot>
   </div>
