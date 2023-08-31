@@ -36,7 +36,7 @@ export const useTableStoreFactory = (id) => {
       },
       hasRowSelected: (state) => {
         return state.selectedRows.size > 0;
-      }
+      },
     },
     actions: {
       /**
@@ -88,6 +88,15 @@ export const useTableStoreFactory = (id) => {
         } else {
           this.selectedRows.add(id);
         }
+      },
+      addRowIdToSelection (id) {
+        this.selectedRows.add(id);
+      },
+      removeRowIdFromSelection (id) {
+        this.selectedRows.delete(id);
+      },
+      clearSelectedRows() {
+        this.selectedRows = new Set();
       },
       deleteRow(id) {
         this.currentRows = [...this.currentRows.filter((tableRow) => {

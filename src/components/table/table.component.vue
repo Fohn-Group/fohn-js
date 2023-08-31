@@ -3,7 +3,7 @@
  * Todo serve two different mode. Load all items and use fuse search internally or
  * use as it is now, loading items per page load.
  */
-import {onMounted, ref, provide} from 'vue';
+import {onMounted, ref, provide, computed} from 'vue';
 import debounce from 'lodash.debounce';
 import { useTableStoreFactory } from './table.store';
 
@@ -30,10 +30,14 @@ export default {
     keepTableState: {
       type: Boolean,
       default: true,
+    },
+    keepSelectionAcrossPage: {
+      type: Boolean,
+      default: false,
     }
   },
   setup(props, { attrs, slots, emit }) {
-    const { columns, dataUrl, searchDebounceValue, storeId, keepTableState, hasSelectableRows } = props;
+    const { columns, dataUrl, searchDebounceValue, storeId, keepTableState, hasSelectableRows, keepSelectionAcrossPage } = props;
     const rows = ref([]);
     const isFetching = ref(false);
     const currentPage = ref(1);
@@ -41,6 +45,7 @@ export default {
     const sortDirection = ref('');
     const itemsPerPage = ref(props.itemsPerPage);
     const totalItems = ref(0);
+    const selectedRows = ref(0);
     const query = ref('');
 
     // each table get its own tableStore.
@@ -68,9 +73,36 @@ export default {
       sortDirection.value = state.tableState.sort.direction;
       itemsPerPage.value = state.tableState.itemsPerPage;
       query.value = state.tableState.currentQuery;
+      selectedRows.value = state.selectedRows;
+    });
+
+    const hasAllRowSelected = computed(() => {
+      return rows.value.every((row) => selectedRows.value.has(row.id));
+    });
+
+    const hasSomeRowSelected = computed( () => {
+      return rows.value.reduce((acc, row) => {
+        if (selectedRows.value.has(row.id)) {
+          acc.push(row.id);
+        }
+        return acc;
+      }, []).length > 0;
+    });
+
+    const selectedRowSize = computed(() => selectedRows.value.size);
+
+    const pageSelectState = computed(() => {
+      return {
+        all : hasAllRowSelected.value,
+        partial: hasSomeRowSelected.value && !hasAllRowSelected.value,
+        none: !hasAllRowSelected.value && !hasSomeRowSelected.value,
+      };
     });
 
     const loadPage = (pageNumber) => {
+      if (!keepSelectionAcrossPage) {
+        tableStore.clearSelectedRows();
+      }
       tableStore.loadPage(pageNumber);
     };
 
@@ -82,6 +114,18 @@ export default {
     const sortTable = (columnName, dir) => {
       tableStore.sortTable(columnName, dir);
     };
+
+    const togglePageRows = () => {
+      if (hasAllRowSelected.value) {
+        rows.value.forEach( (row) => tableStore.removeRowIdFromSelection(row.id));
+      } else {
+        rows.value.forEach( (row) => tableStore.addRowIdToSelection(row.id));
+      }
+    }
+
+    const clearSelectedRows = () => {
+      tableStore.clearSelectedRows();
+    }
 
     const searchItems = (query) => {
       debounceSearch(query);
@@ -125,6 +169,10 @@ export default {
       clearSearch,
       setItemsPerPage,
       hasSelectableRows,
+      selectedRowSize,
+      togglePageRows,
+      clearSelectedRows,
+      pageSelectState,
       executeRowAction,
     };
   },
@@ -150,6 +198,10 @@ export default {
         :setItemsPerPage="setItemsPerPage"
         :executeRowAction="executeRowAction"
         :hasSelectableRows="hasSelectableRows"
+        :selectedRowSize="selectedRowSize"
+        :togglePageRows="togglePageRows"
+        :pageSelectState="pageSelectState"
+        :clearSelectedRows="clearSelectedRows"
         v-bind="$attrs">table</slot>
   </div>
 </template>
