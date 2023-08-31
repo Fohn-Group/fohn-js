@@ -18,7 +18,6 @@ export default {
     const { row } = toRefs(props);
     const tableStore = useTableStoreFactory(inject('tableStoreId'))();
 
-
     const isEvenRow = (idx) => (idx % 2) === 0;
     const isSelected = computed(() => tableStore.isRowSelected(row.value.id));
 
