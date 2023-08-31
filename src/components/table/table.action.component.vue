@@ -1,39 +1,37 @@
 <script>
 import {useTableStoreFactory} from "./table.store";
-import {inject, ref, toRefs} from "vue";
+import {computed, inject, ref, toRefs} from "vue";
 
 export default {
   name: 'fohn-table-action',
   props: {
     actionUrl: String,
+    tableRowsSelected: Number,
     isTableFetching: Boolean,
   },
 
   setup(props, { attrs, slots, emit }) {
     const {actionUrl} = props;
-    const {isTableFetching} = toRefs(props);
-    const isEnable = ref(false);
+    const {isTableFetching, tableRowsSelected} = toRefs(props);
     const tableStore = useTableStoreFactory(inject('tableStoreId'))();
 
-    tableStore.$subscribe((mutation, state) => {
-      isEnable.value = state.selectedRows.size > 0;
-    });
+    const isEnable = computed(() => tableRowsSelected.value > 0);
 
     const execute = (event) => {
       if (!isTableFetching.value) {
-        tableStore.executeAction(actionUrl, event.currentTarget);
+        tableStore.executeAction(actionUrl, event?.currentTarget);
       }
     }
 
-    return {execute, isEnable, isTableFetching}
+    return {execute, isEnable, isTableFetching, tableRowsSelected}
   }
 }
-
 </script>
 
 <template>
   <slot
       :isTableFetching="isTableFetching"
+      :tableRowsSelected="tableRowsSelected"
       :execute="execute"
       :isEnable="isEnable"
       v-bind="$attrs">table action</slot>
