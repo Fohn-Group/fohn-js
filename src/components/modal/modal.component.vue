@@ -7,6 +7,10 @@ export default {
   name: 'fohn-modal',
   props: {
     storeId: String,
+    message: {
+      type: String,
+      default: '',
+    },
     title: String,
     isClosable: {
       type: Boolean,
@@ -31,13 +35,14 @@ export default {
     const { height: modalHeight } = useElementSize(modalEl);
     const { height: windowHeight } = useWindowSize();
     let maxHeight = false;
-    const message = ref('');
+    const message = ref(props);
 
     const modalStore = useModalStoreFactory(storeId)();
     modalStore.status = status.value;
     modalStore.contentUrl = contentUrl;
     modalStore.callbacks = callbacks;
     modalStore.title = modalTitle.value;
+    modalStore.message = message.value;
 
     modalStore.$subscribe((mutation, state) => {
       status.value = state.status;
