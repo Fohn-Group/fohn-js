@@ -37,7 +37,14 @@ export default {
     }
   },
   setup(props, { attrs, slots, emit }) {
-    const { columns, dataUrl, searchDebounceValue, storeId, keepTableState, hasSelectableRows, keepSelectionAcrossPage } = props;
+    const { columns,
+      dataUrl,
+      searchDebounceValue,
+      storeId,
+      keepTableState,
+      hasSelectableRows,
+      keepSelectionAcrossPage } = props;
+
     const rows = ref([]);
     const isFetching = ref(false);
     const currentPage = ref(1);
