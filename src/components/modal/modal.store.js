@@ -58,7 +58,9 @@ export const useModalStoreFactory = (id) => {
        */
       openModal(options = {}) {
         const {message, args = {}, payload = {}} = options;
-        this.message = message;
+        if (message) {
+          this.setMessage(message);
+        }
         this.callbackPayload = payload;
         this.status = 'open';
         if (this.contentUrl) {
