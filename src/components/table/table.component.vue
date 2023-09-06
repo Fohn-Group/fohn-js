@@ -60,6 +60,9 @@ export default {
 
     const debounceSearch = debounce((query) => {
       tableStore.searchItems(query);
+      if (!keepSelectionAcrossPage) {
+        clearSelectedRows();
+      }
     }, searchDebounceValue);
 
     tableStore.setDataUrl(dataUrl);
