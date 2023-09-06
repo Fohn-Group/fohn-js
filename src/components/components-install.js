@@ -13,6 +13,7 @@ import TableRow from './table/row.component.vue';
 import TableCell from './table/cell.component.vue';
 import ExceptionModal from './modal/exception-modal.component.vue';
 import TablePaginator from './table/paginator.component.vue';
+import TableAction from "./table/table.action.component.vue";
 import Dummy from './dummy.component.vue';
 import Modal from './modal/modal.component.vue';
 import Tabs from './tabs/tabs.component.vue';
@@ -33,6 +34,7 @@ const fohnComponents = [
   {name: 'fohn-table-row', def:  TableRow},
   {name: 'fohn-table-cell', def:  TableCell},
   {name: 'fohn-table-paginator', def:  TablePaginator},
+  {name: 'fohn-table-action', def:  TableAction},
   {name: 'fohn-modal', def:  Modal},
   {name: 'fohn-ui-exception', def:  ExceptionModal},
   {name: 'fohn-tab', def:  Tab},

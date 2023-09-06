@@ -24,7 +24,7 @@ export const useFormStoreFactory = (id) => {
           this.fetchControlValues();
         }
       },
-      clearControlValues() {
+      clearControlsValue() {
         for (const value of this.controls.values()) {
           value.value = '';
         }

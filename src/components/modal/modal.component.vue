@@ -1,5 +1,5 @@
 <script>
-import {onMounted, ref, computed} from 'vue';
+import {onMounted, ref, watch, computed} from 'vue';
 import {useModalStoreFactory} from "./modal.store";
 import {useElementSize, useWindowSize} from "@vueuse/core";
 
@@ -7,6 +7,10 @@ export default {
   name: 'fohn-modal',
   props: {
     storeId: String,
+    message: {
+      type: String,
+      default: '',
+    },
     title: String,
     isClosable: {
       type: Boolean,
@@ -18,7 +22,8 @@ export default {
       default: 'close',
     }
   },
-  setup: function (props, extra) {
+  emits: ['onConfirm', 'onCancel'],
+  setup: function (props, { attrs, slots, emit }) {
     const { contentUrl, callbacks, storeId } = props;
     const modalTitle = ref(props.title);
     const hasRemoteContent = !!contentUrl;
@@ -30,7 +35,12 @@ export default {
     const { height: modalHeight } = useElementSize(modalEl);
     const { height: windowHeight } = useWindowSize();
     let maxHeight = false;
-    const message = ref('');
+    const modalMessage = ref('');
+
+    // listen top props change and update store message.
+    watch(() => props.message, (newMsg) => {
+      modalStore.setMessage(newMsg);
+    });
 
     const modalStore = useModalStoreFactory(storeId)();
     modalStore.status = status.value;
@@ -42,16 +52,23 @@ export default {
       status.value = state.status;
       isLoading.value = state.isLoading;
       modalTitle.value = state.title;
-      message.value = state.message;
+      modalMessage.value = state.message;
     });
 
-    const closeModal = () => {
-      if (isClosable) {
+    const closeModal = (forceClose = false) => {
+      if (forceClose || isClosable) {
         modalStore.closeModal();
         maxHeight = false;
       }
     }
 
+    const emitConfirm = (e) => {
+      emit('onConfirm', e);
+    }
+
+    const emitCancel = (e) => {
+      emit('onCancel', e);
+    }
     const openModal = () => {
       modalStore.openModal();
     }
@@ -85,9 +102,11 @@ export default {
       isLoading,
       container,
       heightCss,
-      message,
+      modalMessage,
       onCallback,
       hasRemoteContent,
+      emitConfirm,
+      emitCancel,
       isClosable,
     };
   },
@@ -104,9 +123,11 @@ export default {
         :closeModal="closeModal"
         :openModal="openModal"
         :onCallback="onCallback"
-        :message="message"
+        :message="modalMessage"
         :hasRemoteContent="hasRemoteContent"
         :isClosable="isClosable"
+        :confirm="emitConfirm"
+        :cancel="emitCancel"
         v-bind="$attrs">Modal
     </slot>
   </div>

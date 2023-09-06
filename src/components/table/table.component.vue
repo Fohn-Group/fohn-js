@@ -3,14 +3,14 @@
  * Todo serve two different mode. Load all items and use fuse search internally or
  * use as it is now, loading items per page load.
  */
-import {onMounted, ref} from 'vue';
+import {onMounted, ref, provide, computed} from 'vue';
 import debounce from 'lodash.debounce';
 import { useTableStoreFactory } from './table.store';
 
 export default {
   name: 'fohn-table',
   props: {
-    actions: {
+    rowActions: {
       type: Object,
     },
     searchDebounceValue: {
@@ -20,16 +20,31 @@ export default {
     columns: {
       type: Array,
     },
+    hasSelectableRows: {
+      type: Boolean,
+      default: false,
+    },
     storeId: String,
     dataUrl: String,
     itemsPerPage: Number,
     keepTableState: {
       type: Boolean,
       default: true,
+    },
+    keepSelectionAcrossPage: {
+      type: Boolean,
+      default: false,
     }
   },
   setup(props, { attrs, slots, emit }) {
-    const { columns, dataUrl, searchDebounceValue, storeId, keepTableState } = props;
+    const { columns,
+      dataUrl,
+      searchDebounceValue,
+      storeId,
+      keepTableState,
+      hasSelectableRows,
+      keepSelectionAcrossPage } = props;
+
     const rows = ref([]);
     const isFetching = ref(false);
     const currentPage = ref(1);
@@ -37,12 +52,17 @@ export default {
     const sortDirection = ref('');
     const itemsPerPage = ref(props.itemsPerPage);
     const totalItems = ref(0);
+    const selectedRows = ref(new Set());
     const query = ref('');
+
     // each table get its own tableStore.
     const tableStore = useTableStoreFactory(storeId)();
 
     const debounceSearch = debounce((query) => {
       tableStore.searchItems(query);
+      if (!keepSelectionAcrossPage) {
+        clearSelectedRows();
+      }
     }, searchDebounceValue);
 
     tableStore.setDataUrl(dataUrl);
@@ -63,9 +83,36 @@ export default {
       sortDirection.value = state.tableState.sort.direction;
       itemsPerPage.value = state.tableState.itemsPerPage;
       query.value = state.tableState.currentQuery;
+      selectedRows.value = new Set(state.selectedRows) ;
+    });
+
+    const hasAllRowSelected = computed(() => {
+      return (selectedRows.value.size === 0) ? false : rows.value.every((row) => selectedRows.value.has(row.id));
+    });
+
+    const hasSomeRowSelected = computed( () => {
+      return rows.value.reduce((acc, row) => {
+        if (selectedRows.value.has(row.id)) {
+          acc.push(row.id);
+        }
+        return acc;
+      }, []).length > 0;
+    });
+
+    const selectedRowSize = computed(() => selectedRows.value.size);
+
+    const pageSelectState = computed(() => {
+      return {
+        all : hasAllRowSelected.value,
+        partial: hasSomeRowSelected.value && !hasAllRowSelected.value,
+        none: !hasAllRowSelected.value && !hasSomeRowSelected.value,
+      };
     });
 
     const loadPage = (pageNumber) => {
+      if (!keepSelectionAcrossPage) {
+        tableStore.clearSelectedRows();
+      }
       tableStore.loadPage(pageNumber);
     };
 
@@ -78,6 +125,18 @@ export default {
       tableStore.sortTable(columnName, dir);
     };
 
+    const togglePageRows = () => {
+      if (hasAllRowSelected.value) {
+        rows.value.forEach( (row) => tableStore.removeRowIdFromSelection(row.id));
+      } else {
+        rows.value.forEach( (row) => tableStore.addRowIdToSelection(row.id));
+      }
+    }
+
+    const clearSelectedRows = () => {
+      tableStore.clearSelectedRows();
+    }
+
     const searchItems = (query) => {
       debounceSearch(query);
     }
@@ -87,19 +146,22 @@ export default {
     }
 
     /**
-     * Execute a table action, i.e. call a javascript function pass into props.action.
+     * Execute a table row action, i.e. call a javascript function pass into props.action.
      * The function is executed with the row id as first param.
      *
      * @param actionName
      * @param id
      */
-    const executeAction = (actionName, id) => {
-      props.actions[actionName](id);
+    const executeRowAction = (actionName, id) => {
+      props.rowActions[actionName](id);
     }
 
     onMounted(() => {
       tableStore.fetchItems();
     });
+
+    // have storeId available to children component
+    provide('tableStoreId', storeId);
 
     return {
       isFetching,
@@ -116,7 +178,12 @@ export default {
       sortTable,
       clearSearch,
       setItemsPerPage,
-      executeAction,
+      hasSelectableRows,
+      selectedRowSize,
+      togglePageRows,
+      clearSelectedRows,
+      pageSelectState,
+      executeRowAction,
     };
   },
 };
@@ -139,7 +206,12 @@ export default {
         :sortTable="sortTable"
         :clearSearch="clearSearch"
         :setItemsPerPage="setItemsPerPage"
-        :executeAction="executeAction"
+        :executeRowAction="executeRowAction"
+        :hasSelectableRows="hasSelectableRows"
+        :selectedRowSize="selectedRowSize"
+        :togglePageRows="togglePageRows"
+        :pageSelectState="pageSelectState"
+        :clearSelectedRows="clearSelectedRows"
         v-bind="$attrs">table</slot>
   </div>
 </template>
