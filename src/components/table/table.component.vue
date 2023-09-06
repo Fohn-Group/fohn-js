@@ -52,7 +52,7 @@ export default {
     const sortDirection = ref('');
     const itemsPerPage = ref(props.itemsPerPage);
     const totalItems = ref(0);
-    const selectedRows = ref(0);
+    const selectedRows = ref(new Set());
     const query = ref('');
 
     // each table get its own tableStore.
@@ -80,11 +80,11 @@ export default {
       sortDirection.value = state.tableState.sort.direction;
       itemsPerPage.value = state.tableState.itemsPerPage;
       query.value = state.tableState.currentQuery;
-      selectedRows.value = state.selectedRows;
+      selectedRows.value = new Set(state.selectedRows) ;
     });
 
     const hasAllRowSelected = computed(() => {
-      return rows.value.every((row) => selectedRows.value.has(row.id));
+      return (selectedRows.value.size === 0) ? false : rows.value.every((row) => selectedRows.value.has(row.id));
     });
 
     const hasSomeRowSelected = computed( () => {
