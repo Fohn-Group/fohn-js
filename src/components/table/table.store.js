@@ -102,6 +102,7 @@ export const useTableStoreFactory = (id) => {
         this.currentRows = [...this.currentRows.filter((tableRow) => {
           return tableRow.id !== id
         })];
+        this.fetchItems();
       },
       loadPage(pageNumber) {
         this.tableState.currentPage = pageNumber;
