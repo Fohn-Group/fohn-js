@@ -1,5 +1,5 @@
 <script>
-import {onMounted, ref, computed} from 'vue';
+import {onMounted, ref, watch, computed} from 'vue';
 import {useModalStoreFactory} from "./modal.store";
 import {useElementSize, useWindowSize} from "@vueuse/core";
 
@@ -35,20 +35,24 @@ export default {
     const { height: modalHeight } = useElementSize(modalEl);
     const { height: windowHeight } = useWindowSize();
     let maxHeight = false;
-    const message = ref(props);
+    const modalMessage = ref('');
+
+    // listen top props change and update store message.
+    watch(() => props.message, (newMsg) => {
+      modalStore.setMessage(newMsg);
+    });
 
     const modalStore = useModalStoreFactory(storeId)();
     modalStore.status = status.value;
     modalStore.contentUrl = contentUrl;
     modalStore.callbacks = callbacks;
     modalStore.title = modalTitle.value;
-    modalStore.message = message.value;
 
     modalStore.$subscribe((mutation, state) => {
       status.value = state.status;
       isLoading.value = state.isLoading;
       modalTitle.value = state.title;
-      message.value = state.message;
+      modalMessage.value = state.message;
     });
 
     const closeModal = (forceClose = false) => {
@@ -98,7 +102,7 @@ export default {
       isLoading,
       container,
       heightCss,
-      message,
+      modalMessage,
       onCallback,
       hasRemoteContent,
       emitConfirm,
@@ -119,7 +123,7 @@ export default {
         :closeModal="closeModal"
         :openModal="openModal"
         :onCallback="onCallback"
-        :message="message"
+        :message="modalMessage"
         :hasRemoteContent="hasRemoteContent"
         :isClosable="isClosable"
         :confirm="emitConfirm"
