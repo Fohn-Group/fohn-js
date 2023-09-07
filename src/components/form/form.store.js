@@ -20,7 +20,7 @@ export const useFormStoreFactory = (id) => {
       setDataId(id) {
         this.recordId = id;
         if (this.valuesUrl) {
-          this.clearControlValues();
+          this.clearControlsValue();
           this.fetchControlValues();
         }
       },
