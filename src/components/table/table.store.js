@@ -69,6 +69,10 @@ export const useTableStoreFactory = (id) => {
           }
           this.totalItems = results?.totalItems || 0;
           this.currentRows = results?.rows || [];
+          if (this.currentRows.length === 0 && this.tableState.currentPage > 1) {
+            // reload previous page if no rows are return.
+            this.loadPage(this.tableState.currentPage - 1);
+          }
         });
       },
       updateRow(id, newRowValue) {
