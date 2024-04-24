@@ -132,11 +132,13 @@ export default {
       }
     }
 
-    const clearValue = () => {
+    const clearValue = (forceOpen = true) => {
       emit('update:modelValue', null);
       select.value = null;
-      openItems();
-      selectInputEl.value.focus();
+      if (forceOpen) {
+        openItems();
+        selectInputEl.value.focus();
+      }
     };
 
     const isItemSelected = (item) => select.value === item.key;
@@ -164,7 +166,11 @@ export default {
 
       // initialise select items.
       if (props.requestUrl) {
-        fetchItems({action: 'init', value: modelValue.value});
+        fetchItems({action: 'init', value: modelValue.value}, (values) => {
+          if (! values.find( (item) => item.key === modelValue.value)) {
+            clearValue(false);
+          }
+        });
       }
       selectInputEl.value = selectEl.value.querySelector('input[type="text"]');
     });
