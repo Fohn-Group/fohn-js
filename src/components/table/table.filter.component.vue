@@ -11,11 +11,18 @@ export default {
     },
     iconName: String,
     altIconName: String,
+    columns: Array,
+    operators: Array,
   },
 
   setup(props, { attrs, slots, emit }) {
     const {iconName, altIconName} = props;
     const isActive = ref(props.isActive);
+
+    const columns = ref(props.columns);
+    const operators = ref(props.operators);
+
+    const filters = ref({});
 
     const tableStore = useTableStoreFactory(inject('tableStoreId'))();
     const tableIsFetching = ref(false);
@@ -35,6 +42,10 @@ export default {
     return {
       iconCss,
       toggleFilterIcon,
+      isActive,
+      columns,
+      operators,
+      filters,
     }
   }
 }
@@ -45,6 +56,10 @@ export default {
   <slot
       :iconCss=iconCss
       :toggleFilterIcon=toggleFilterIcon
+      :isActive="isActive"
+      :columns="columns"
+      :operators="operators"
+      :filters="filters"
       v-bind="$attrs">table filter</slot>
 </template>
 
