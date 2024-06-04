@@ -17,6 +17,7 @@ import TableAction from "./table/table.action.component.vue";
 import TableFilter from "./table/table.filter.component.vue";
 import TableFilterItem from "./table/table.filter.item.component.vue";
 import TableFilterSelect from "./table/table.filter.select.component.vue";
+import TableFilterValue from "./table/table.filter.value.component.vue";
 import Dummy from './dummy.component.vue';
 import Modal from './modal/modal.component.vue';
 import Tabs from './tabs/tabs.component.vue';
@@ -41,6 +42,7 @@ const fohnComponents = [
   {name: 'fohn-table-filter', def:  TableFilter},
   {name: 'fohn-table-filter-item', def:  TableFilterItem},
   {name: 'fohn-table-filter-select', def:  TableFilterSelect},
+  {name: 'fohn-table-filter-value', def:  TableFilterValue},
   {name: 'fohn-modal', def:  Modal},
   {name: 'fohn-ui-exception', def:  ExceptionModal},
   {name: 'fohn-tab', def:  Tab},
