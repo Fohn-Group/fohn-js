@@ -1,8 +1,8 @@
 <script>
 
 /**
- * Hold the current filter item.
- * filterValue contains the id of the column, the operator and a value.
+ * Single column filtering management.
+ * User can select a column, an operator to act on the selected column and a value.
  *
  * Columns contains an array of column definition to be filtered.
  * - column definition is an object:
@@ -20,9 +20,10 @@
  *
  */
 import {computed, ref, toRefs} from "vue";
+import {useFindIndexDefault} from "../utils/composable/utils";
 
 export default {
-  name: 'fohn-table-filter-item',
+  name: 'fohn-table-filter-column',
   props: {
     columns : {
       type: Array,
@@ -32,27 +33,26 @@ export default {
       type: Array,
       default: () => [],
     },
-    filterValue: {
-      type: Object,
-      default: () => {}
+    filteredColumns: {
+      type: Array,
+      default: () => []
     },
   },
 
   setup(props, { attrs, slots, emit }) {
 
-    const {columns, operators, filterValue} = toRefs(props);
-    const currentColumnIdx = ref(0);
+    const {columns, operators, filteredColumns} = toRefs(props);
+    // const currentColumnIdx = ref(0);
     const currentOperatorIdx = ref(0);
-    const itemValue = ref(filterValue.value.value);
+    const columnValue = ref();
 
-    // Get initial column idx from filterValue if any.
-    const initalColunmIdx = columns.value.findIndex( (column) => column.id === filterValue.value.column);
-    currentColumnIdx.value = initalColunmIdx > 0 ? initalColunmIdx : 0;
+    // Get initial column idx from filteredColumn if any.
+    // eslint-disable-next-line max-len
+    const currentColumnIdx = ref(useFindIndexDefault(columns.value, (column) => column.id === filteredColumns.value.column));
 
-
+    // Get columnDef and id base on current idx value.
     const columnDef = computed (() => columns.value[currentColumnIdx.value]);
-    const itemLabel = computed (() => columnDef.value.label);
-
+    const columnId = computed (() => columnDef.value.id);
 
     /** Filter operators base on column data type */
     const typeOperators = computed( () => {
@@ -61,18 +61,18 @@ export default {
       })
     });
 
-    const initialOperatorIdx = typeOperators.value.findIndex( (operator) => operator.id === filterValue.value.operator);
-    currentOperatorIdx.value = initialOperatorIdx > 0 ? initialOperatorIdx : 0;
+    // eslint-disable-next-line max-len
+    currentOperatorIdx.value = useFindIndexDefault(typeOperators.value, (operator) => operator.id === filteredColumns.value.operator);
 
-    const itemOperator = computed (() => typeOperators.value[currentOperatorIdx.value].label);
+    const columnOperator = computed (() => typeOperators.value[currentOperatorIdx.value].id);
 
     /** Get what type of component is required for setting filter value. */
-    const itemComponent = computed ( () => {
+    const columnComponent = computed ( () => {
       const component = {
         id: columnDef.value.componentName,
         props : columnDef.value.props,
       }
-      component.props.value = itemValue.value;
+      component.props.value = columnValue.value;
 
       return component;
     });
@@ -84,21 +84,20 @@ export default {
     const setColumn = (idx, column) => {
       currentColumnIdx.value = idx;
       currentOperatorIdx.value = 0;
-      itemValue.value = '';
+      columnValue.value = '';
     }
 
-    const setOperator = (idx, operator) => {
+    const setOperator = (idx) => {
       currentOperatorIdx.value = idx;
     }
 
     const setValue = (value) => {
-      itemValue.value = value;
+      columnValue.value = value;
     }
 
-    return {itemLabel,
-      itemOperator,
-      itemValue,
-      itemComponent,
+    return {columnId,
+      columnOperator,
+      columnComponent,
       columns,
       typeOperators,
       setColumn,
@@ -111,10 +110,9 @@ export default {
 
 <template>
   <slot
-      :itemLabel="itemLabel"
-      :itemOperator="itemOperator"
-      :itemValue="itemValue"
-      :itemComponent="itemComponent"
+      :columnId="columnId"
+      :columnOperator="columnOperator"
+      :columnComponent="columnComponent"
       :columns="columns"
       :typeOperators="typeOperators"
       :setColumn="setColumn"

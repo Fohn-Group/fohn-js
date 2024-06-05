@@ -1,14 +1,15 @@
 <script>
 /**
- * Select input.
- * Use for selecting filter column or filter column operator.
+ * Allow selecting an item from an array of object: [{id: 'id', label: 'label'}...].
+ * The internal value is the id of the selected item but display is the label.
  */
 
-import {onMounted, ref, toRefs, watch} from "vue";
+import {computed, onMounted, ref, toRefs, watch} from "vue";
 import {useDebounceFn} from "@vueuse/core";
+import {useFindIndexDefault} from "./composable/utils";
 
 export default {
-  name: 'fohn-table-filter-select',
+  name: 'fohn-item-select',
   emits: ['onItemSelect'],
   props: {
     initValue: String,
@@ -23,10 +24,10 @@ export default {
     const isActive = ref(false);
     const inputContainer = ref();
     const inputEl = ref();
-    const value = ref(initValue.value);
+    const currentIdx = ref(useFindIndexDefault(items.value, (i) => i.id === initValue.value));
 
     watch(initValue, (newVal) => {
-      value.value = newVal;
+      currentIdx.value = useFindIndexDefault(items.value, (i) => i.id === newVal);
     })
 
     const toggleSelect = () => {
@@ -37,9 +38,13 @@ export default {
       isActive.value = false;
     }, 200);
 
+    const value = computed( () => {
+      return items.value[currentIdx.value].label;
+    });
+
     const selectItem = (idx) => {
       inputEl.value.focus();
-      value.value = items.value[idx].label;
+      currentIdx.value = idx;
       emit('onItemSelect', idx, items.value[idx].id);
       closeSelect();
     }

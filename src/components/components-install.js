@@ -3,6 +3,7 @@ import Base from './base.component.vue';
 import Form from './form/form.component.vue';
 import Control from './form/control.component.vue';
 import Spinner from './utils/spinner.component.vue';
+import ItemSelect from "./utils/item.select.component.vue";
 import Select from './form/select.component.vue';
 import Radio from './form/radio.component.vue';
 import Navigation from './navigation/navigation.component.vue';
@@ -15,8 +16,7 @@ import ExceptionModal from './modal/exception-modal.component.vue';
 import TablePaginator from './table/paginator.component.vue';
 import TableAction from "./table/table.action.component.vue";
 import TableFilter from "./table/table.filter.component.vue";
-import TableFilterItem from "./table/table.filter.item.component.vue";
-import TableFilterSelect from "./table/table.filter.select.component.vue";
+import TableFilterColumn from "./table/table.filter.column.component.vue";
 import TableFilterValue from "./table/table.filter.value.component.vue";
 import Dummy from './dummy.component.vue';
 import Modal from './modal/modal.component.vue';
@@ -27,6 +27,7 @@ const fohnComponents = [
   {name: 'flat-pickr', def:  flatPickr},
   {name: 'fohn-vue', def:  Base},
   {name: 'fohn-spinner', def:  Spinner},
+  {name: 'fohn-item-select', def:  ItemSelect},
   {name: 'fohn-form', def:  Form},
   {name: 'fohn-control', def:  Control},
   {name: 'fohn-select', def:  Select},
@@ -40,8 +41,7 @@ const fohnComponents = [
   {name: 'fohn-table-paginator', def:  TablePaginator},
   {name: 'fohn-table-action', def:  TableAction},
   {name: 'fohn-table-filter', def:  TableFilter},
-  {name: 'fohn-table-filter-item', def:  TableFilterItem},
-  {name: 'fohn-table-filter-select', def:  TableFilterSelect},
+  {name: 'fohn-table-filter-column', def:  TableFilterColumn},
   {name: 'fohn-table-filter-value', def:  TableFilterValue},
   {name: 'fohn-modal', def:  Modal},
   {name: 'fohn-ui-exception', def:  ExceptionModal},
