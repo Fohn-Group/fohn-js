@@ -1,6 +1,7 @@
 <script>
-import {computed, inject, nextTick, onMounted, reactive, ref} from "vue";
+import {computed, nextTick, ref} from "vue";
 import {useTableStoreFactory} from "./table.store";
+import {useDefaultFilterValue} from "./composable/filter";
 
 export default {
   name: 'fohn-table-filter',
@@ -24,6 +25,10 @@ export default {
     const columns = props.columns;
     const operators = props.operators;
     const filters = ref(tableStore.filters);
+    if (filters.value.length === 0) {
+      tableStore.addFilter(useDefaultFilterValue(columns, operators));
+    }
+
     const tableIsFetching = ref(false);
 
     tableStore.$subscribe((mutation, state) => {
@@ -39,10 +44,16 @@ export default {
 
     const removeFilter = (id) => {
       tableStore.removeFilter(id);
+      if (tableStore.getActiveFilterCount() === 0) {
+        isActive.value = false;
+        nextTick( () => {
+          tableStore.addFilter(useDefaultFilterValue(columns, operators));
+        });
+      }
     }
 
-    const addFilter = (filter) => {
-      tableStore.addFilter(filter);
+    const addFilter = () => {
+      tableStore.addFilter(useDefaultFilterValue(columns, operators));
     }
 
     const toggleFilterIcon = () => isActive.value = !isActive.value;
