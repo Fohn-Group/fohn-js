@@ -1,5 +1,5 @@
 <script>
-import {computed, inject, ref} from "vue";
+import {computed, inject, nextTick, onMounted, reactive, ref} from "vue";
 import {useTableStoreFactory} from "./table.store";
 
 export default {
@@ -16,19 +16,19 @@ export default {
   },
 
   setup(props, { attrs, slots, emit }) {
+    const tableStore = useTableStoreFactory('myid'/* inject('tableStoreId') */)();
+
     const {iconName, altIconName} = props;
     const isActive = ref(props.isActive);
 
-    const columns = ref(props.columns);
-    const operators = ref(props.operators);
-
-    const filters = ref({});
-
-    const tableStore = useTableStoreFactory(inject('tableStoreId'))();
+    const columns = props.columns;
+    const operators = props.operators;
+    const filters = ref(tableStore.filters);
     const tableIsFetching = ref(false);
 
     tableStore.$subscribe((mutation, state) => {
       tableIsFetching.value = state.isFetching;
+      filters.value = state.tableState.filters;
     });
 
     const iconCss = computed(() => ({
@@ -36,6 +36,14 @@ export default {
       [altIconName]: isActive.value,
       'text-gray-200': tableIsFetching.value,
     }));
+
+    const removeFilter = (id) => {
+      tableStore.removeFilter(id);
+    }
+
+    const addFilter = (filter) => {
+      tableStore.addFilter(filter);
+    }
 
     const toggleFilterIcon = () => isActive.value = !isActive.value;
 
@@ -46,6 +54,8 @@ export default {
       columns,
       operators,
       filters,
+      removeFilter,
+      addFilter,
     }
   }
 }
@@ -60,6 +70,8 @@ export default {
       :columns="columns"
       :operators="operators"
       :filters="filters"
+      :removeFilter="removeFilter"
+      :addFilter="addFilter"
       v-bind="$attrs">table filter</slot>
 </template>
 
