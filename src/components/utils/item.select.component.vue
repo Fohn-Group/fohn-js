@@ -44,8 +44,11 @@ export default {
 
     const selectItem = (idx) => {
       inputEl.value.focus();
-      currentIdx.value = idx;
-      emit('onItemSelect', idx, items.value[idx].id);
+      // only fire when different item is selected.
+      if (currentIdx.value !== idx) {
+        currentIdx.value = idx;
+        emit('onItemSelect', idx, items.value[idx].id);
+      }
       closeSelect();
     }
 
