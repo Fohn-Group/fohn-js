@@ -19,12 +19,12 @@
  *  - types array contains all datatype that the operator can be used with.
  *
  */
-import {computed, reactive, ref, toRaw, toRefs} from "vue";
+import {computed, ref, toRefs} from "vue";
 import {useFindIndexDefault} from "../utils/composable/utils";
 
 export default {
   name: 'fohn-table-filter-column',
-  emits: ['onRemove', 'onAdd'],
+  emits: ['onRemove', 'onAdd', 'onUpdate'],
   props: {
     columns : {
       type: Array,
@@ -41,8 +41,8 @@ export default {
 
   setup(props, { attrs, slots, emit }) {
 
-    const columns = [...props.columns];
-    const filterValue = {...props.filterValue};
+    const columns = props.columns;
+    const filterValue = props.filterValue;
     const {operators} = toRefs(props);
     // const currentColumnIdx = ref(0);
     const currentOperatorIdx = ref(0);
@@ -85,7 +85,14 @@ export default {
         id: columnDef.value.componentName,
         props : {...columnDef.value.props, value: ''},
       }
-      // columnValue.value = '';
+      const filter = {
+        filterId: filterValue.filterId,
+        column: columns[currentColumnIdx.value].id,
+        operator: typeOperators.value[currentOperatorIdx.value].id,
+        value: ''
+      };
+
+      emit('onUpdate', filter);
     }
 
     const setOperator = (idx) => {
@@ -97,22 +104,12 @@ export default {
       columnComponent.value.props.value = value;
     }
 
-    const deleteFilter = (idx) => {
-      emit('onRemove', idx);
+    const deleteFilter = (filterId) => {
+      emit('onRemove', filterId);
     }
 
     const addFilter = () => {
-      const columnDef = columns[0];
-      const columnOperators = operators.value.filter( (operator) => {
-        return operator.types.includes(columnDef.operatorType);
-      });
-
-      const filter = {
-        column: columnDef.id,
-        operator: columnOperators[0].id,
-        value: '',
-      }
-      emit('onAdd', filter);
+      emit('onAdd');
     }
 
     return {columnId,
