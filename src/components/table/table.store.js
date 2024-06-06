@@ -1,8 +1,8 @@
-import { defineStore } from 'pinia';
-import { useLocalStorage } from "@vueuse/core";
+import {defineStore} from 'pinia';
+import {useLocalStorage} from "@vueuse/core";
 import apiService from "../../services/api.service";
 import {utils} from "../../utils";
-import {ref, watch} from "vue";
+import {watch} from "vue";
 
 /**
  * Return a Pinia store definition function.
@@ -24,7 +24,7 @@ export const useTableStoreFactory = (id) => {
           columnName: '',
           direction: 'none',
         },
-        filters : [],
+        filters: [],
       }),
       currentRows: [],
       selectedRows: new Set(),
@@ -53,6 +53,10 @@ export const useTableStoreFactory = (id) => {
         const idx = this.tableState.filters.findIndex( (f) => f.filterId === id);
         this.tableState.filters.splice(idx, 1);
       },
+      getActiveFilterCount() {
+        return this.tableState.filters.length;
+      },
+
       /**
        * Return an apiService useFetch response.
        * @param args = Get argument to pass to url.
@@ -214,11 +218,18 @@ export const useTableStoreFactory = (id) => {
 };
 
 function getFilterNextId(filters) {
-  if (filters.length === 0) {
-    return 0;
+  let maxId = 0;
+
+  if (filters.length > 0) {
+    maxId = filters[0].filterId;
+    for (let i = 1; i < filters.length; i++) {
+      if (filters[i].filterId > maxId) {
+        maxId = filters[i].filterId;
+      }
+    }
   }
 
-  return filters[filters.length - 1].filterId + 1;
+  return  maxId + 1;
 }
 function determineSortDirection(newColumnName, oldColumName, currentDirection, newDirection = null) {
   let direction;
