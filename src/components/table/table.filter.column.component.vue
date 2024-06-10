@@ -19,7 +19,7 @@
  *  - types array contains all datatype that the operator can be used with.
  *
  */
-import {computed, ref, toRefs} from "vue";
+import {computed, ref, toRefs, watch} from "vue";
 import {useFindIndexDefault} from "../utils/composable/utils";
 
 export default {
@@ -34,6 +34,16 @@ export default {
       type: Array,
       default: () => [],
     },
+    /**
+     * Contains all value need for filtering a column.
+     *   key:
+     *    filterId: '1', // unique internal number (use for v-for loop)
+     *    column: 'name', // the name of the column to apply filtering on.
+     *    operator: 'opName', // The operator to apply on the value.
+     *    value: 'value' // the value to apply for the column filtering.
+     *    requiredValue: true or false // whether the operator required a value or not, ex: isEmpty.
+     *
+     */
     filterValue: {
       type: Object,
     },
@@ -42,15 +52,13 @@ export default {
   setup(props, { attrs, slots, emit }) {
 
     const columns = props.columns;
-    const filterValue = props.filterValue;
-    const {operators} = toRefs(props);
-    // const currentColumnIdx = ref(0);
+    // const filterValue = props.filterValue;
+    const {operators, filterValue} = toRefs(props);
     const currentOperatorIdx = ref(0);
-    const columnValue = ref(filterValue.value);
 
     // Get initial column idx from filterValue if any.
     // eslint-disable-next-line max-len
-    const currentColumnIdx = ref(useFindIndexDefault(columns, (column) => column.id === filterValue.column));
+    const currentColumnIdx = ref(useFindIndexDefault(columns, (column) => column.id === filterValue.value.column));
 
     // Get columnDef and id base on current idx value.
     const columnDef = computed (() => columns[currentColumnIdx.value]);
@@ -64,14 +72,21 @@ export default {
     });
 
     // eslint-disable-next-line max-len
-    currentOperatorIdx.value = useFindIndexDefault(typeOperators.value, (operator) => operator.id === filterValue.operator);
+    currentOperatorIdx.value = useFindIndexDefault(typeOperators.value, (operator) => operator.id === filterValue.value.operator);
 
     const columnOperator = computed (() => typeOperators.value[currentOperatorIdx.value].id);
+    const columnRequiredValue = computed (() => typeOperators.value[currentOperatorIdx.value].requiredValue);
 
     /** Get what type of component is required for setting filter value. */
     const columnComponent = ref({
       id: columnDef.value.componentName,
-      props : {...columnDef.value.props, value: columnValue.value},
+      props : {...columnDef.value.props, value: filterValue.value.value},
+    });
+
+    watch(() => filterValue.value.value, (oldV, newV) => {
+      if (newV !== oldV) {
+        emit('onUpdate', filterValue);
+      }
     });
 
     /**
@@ -85,23 +100,23 @@ export default {
         id: columnDef.value.componentName,
         props : {...columnDef.value.props, value: ''},
       }
-      const filter = {
-        filterId: filterValue.filterId,
-        column: columns[currentColumnIdx.value].id,
-        operator: typeOperators.value[currentOperatorIdx.value].id,
-        value: ''
-      };
 
-      emit('onUpdate', filter);
+      filterValue.value.column = columns[currentColumnIdx.value].id;
+      filterValue.value.operator = typeOperators.value[currentOperatorIdx.value].id;
+      setValue('');
     }
 
     const setOperator = (idx) => {
       currentOperatorIdx.value = idx;
+      filterValue.value.operator = typeOperators.value[currentOperatorIdx.value].id;
+      filterValue.value.requiredValue = columnRequiredValue.value;
+      setValue('');
     }
 
     const setValue = (value) => {
-      // columnValue.value = value;
       columnComponent.value.props.value = value;
+
+      filterValue.value.value = value === '' ? null : value;
     }
 
     const deleteFilter = (filterId) => {
@@ -112,10 +127,11 @@ export default {
       emit('onAdd');
     }
 
-    return {columnId,
+    return {
+      columnId,
       columnOperator,
-      columnValue,
       columnComponent,
+      columnRequiredValue,
       columns,
       typeOperators,
       setColumn,
@@ -132,8 +148,8 @@ export default {
   <slot
       :columnId="columnId"
       :columnOperator="columnOperator"
-      :columnValue="columnValue"
       :columnComponent="columnComponent"
+      :columnRequiredValue="columnRequiredValue"
       :columns="columns"
       :typeOperators="typeOperators"
       :setColumn="setColumn"
