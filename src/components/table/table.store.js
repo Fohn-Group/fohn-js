@@ -40,7 +40,14 @@ export const useTableStoreFactory = (id) => {
       },
       filters: (state) => {
         return state.tableState.filters;
-      }
+      },
+      activeFilters: (state) => {
+        return state.tableState.filters.filter( (f) => {
+          return (f.value !== null && f.requiredValue) || !f.requiredValue;
+        }).map((filter) => {
+          return {column: filter.column, operator: filter.operator, value: filter.value}
+        });
+      },
     },
     actions: {
       setFilters(filters) {
@@ -53,6 +60,13 @@ export const useTableStoreFactory = (id) => {
         const idx = this.tableState.filters.findIndex( (f) => f.filterId === id);
         this.tableState.filters.splice(idx, 1);
       },
+      updateFilter(filter) {
+        this.tableState.filters.forEach( (f) => {
+          if (f.filterId === filter.filterId) {
+            f = {...filter};
+          }
+        });
+      },
       getActiveFilterCount() {
         return this.tableState.filters.length;
       },
@@ -63,6 +77,10 @@ export const useTableStoreFactory = (id) => {
        * @returns {UseFetchReturn<*>&PromiseLike<UseFetchReturn<*>>}
        */
       fetchItems(args = {}) {
+        if (!this.url) {
+          console.warn('No url set to fetch data');
+          return;
+        }
         const options = {
           method: 'POST',
           body: utils().json().stringify({
@@ -70,6 +88,7 @@ export const useTableStoreFactory = (id) => {
             _q: this.tableState.currentQuery,
             sorting: this.tableState.sort,
             ipp: this.tableState.itemsPerPage,
+            filters: this.activeFilters,
           }),
         }
 
@@ -212,6 +231,7 @@ export const useTableStoreFactory = (id) => {
       }
     },
   });
+
   fohn.vueService.addStore(id, store);
 
   return store;
