@@ -1,7 +1,8 @@
 <script>
-import {computed, nextTick, ref} from "vue";
+import {computed, nextTick, ref, watch} from "vue";
 import {useTableStoreFactory} from "./table.store";
 import {useDefaultFilterValue} from "./composable/filter";
+import {storeToRefs} from "pinia";
 
 export default {
   name: 'fohn-table-filter',
@@ -18,28 +19,26 @@ export default {
 
   setup(props, { attrs, slots, emit }) {
     const tableStore = useTableStoreFactory('myid'/* inject('tableStoreId') */)();
-
     const {iconName, altIconName} = props;
     const isActive = ref(props.isActive);
 
     const columns = props.columns;
     const operators = props.operators;
-    const filters = ref(tableStore.filters);
+    const {filters, activeFilters} = storeToRefs(tableStore);
     if (filters.value.length === 0) {
       tableStore.addFilter(useDefaultFilterValue(columns, operators));
     }
 
-    const tableIsFetching = ref(false);
-
-    tableStore.$subscribe((mutation, state) => {
-      tableIsFetching.value = state.isFetching;
-      filters.value = state.tableState.filters;
+    watch( () => activeFilters.value.length, (newL, oldL) => {
+      if (newL < oldL) {
+        // one filter is remove.
+        tableStore.fetchItems();
+      }
     });
 
     const iconCss = computed(() => ({
-      [iconName]: !isActive.value,
-      [altIconName]: isActive.value,
-      'text-gray-200': tableIsFetching.value,
+      [iconName]: !isActive.value && activeFilters.value.length === 0,
+      [altIconName]: isActive.value || activeFilters.value.length > 0,
     }));
 
     const removeFilter = (id) => {
@@ -52,8 +51,16 @@ export default {
       }
     }
 
-    const addFilter = () => {
+    const insertFilter = () => {
       tableStore.addFilter(useDefaultFilterValue(columns, operators));
+    }
+
+    /**
+     * Fired when a filter column value has changed.
+     */
+    const updateFilter = (filter) => {
+      tableStore.updateFilter(filter);
+      tableStore.fetchItems();
     }
 
     const toggleFilterIcon = () => isActive.value = !isActive.value;
@@ -65,8 +72,10 @@ export default {
       columns,
       operators,
       filters,
+      activeFilters,
       removeFilter,
-      addFilter,
+      insertFilter,
+      updateFilter,
     }
   }
 }
@@ -81,8 +90,10 @@ export default {
       :columns="columns"
       :operators="operators"
       :filters="filters"
+      :filterCount="activeFilters.length"
       :removeFilter="removeFilter"
-      :addFilter="addFilter"
+      :insertFilter="insertFilter"
+      :updateFilter="updateFilter"
       v-bind="$attrs">table filter</slot>
 </template>
 
