@@ -1,7 +1,7 @@
 <script>
 
-import {useTabsStoreFactory} from "./tabs.store";
-import {computed, onMounted, ref} from "vue";
+import { useTabsStoreFactory } from './tabs.store';
+import { computed, onMounted, ref } from 'vue';
 
 export default {
   name: 'fohn-tab',
@@ -24,10 +24,10 @@ export default {
     onActiveHandlers: {
       type: Array,
       default: () => [],
-    }
+    },
   },
   setup: function (props, { attrs, slots, emit }) {
-    const {name, onActiveHandlers, initKeyFn, showKeyFn, hideKeyFn} = props;
+    const { name, onActiveHandlers, initKeyFn, showKeyFn, hideKeyFn } = props;
     const tabContent = ref(null);
     const tabsStore = useTabsStoreFactory(props.tabStoreId)();
 
@@ -38,19 +38,18 @@ export default {
       if (state.previousTab === name) {
         executeHandlers(getHandlersForKey(onActiveHandlers, hideKeyFn));
       }
-
     });
 
-    const isActive = computed( () => name === tabsStore.activeTabName);
+    const isActive = computed(() => name === tabsStore.activeTabName);
     const isDisabled = computed(() => tabsStore.getTab(name).disabled === true);
 
     onMounted(() => {
-      executeHandlers(getHandlersForKey(onActiveHandlers, initKeyFn))
+      executeHandlers(getHandlersForKey(onActiveHandlers, initKeyFn));
     });
 
-    return {tabContent, isActive, isDisabled};
+    return { tabContent, isActive, isDisabled };
   },
-}
+};
 
 /**
  * Return handlers function for specific keys into an array.
@@ -73,7 +72,7 @@ function getHandlersForKey(fnHandlers, key) {
  * @param handlers
  */
 function executeHandlers(handlers) {
-  handlers.forEach((fn) => fn());
+  handlers.forEach(fn => fn());
 }
 </script>
 

@@ -1,7 +1,7 @@
 <script>
-import {onMounted, ref, watch, computed} from 'vue';
-import {useModalStoreFactory} from "./modal.store";
-import {useElementSize, useWindowSize} from "@vueuse/core";
+import { onMounted, ref, watch, computed } from 'vue';
+import { useModalStoreFactory } from './modal.store';
+import { useElementSize, useWindowSize } from '@vueuse/core';
 
 export default {
   name: 'fohn-modal',
@@ -20,7 +20,7 @@ export default {
     status: {
       type: String,
       default: 'close',
-    }
+    },
   },
   emits: ['onConfirm', 'onCancel'],
   setup: function (props, { attrs, slots, emit }) {
@@ -60,18 +60,18 @@ export default {
         modalStore.closeModal();
         maxHeight = false;
       }
-    }
+    };
 
     const emitConfirm = (e) => {
       emit('onConfirm', e);
-    }
+    };
 
     const emitCancel = (e) => {
       emit('onCancel', e);
-    }
+    };
     const openModal = () => {
       modalStore.openModal();
-    }
+    };
 
     const isOpen = computed(() => {
       return status.value === 'open';
@@ -82,13 +82,13 @@ export default {
         maxHeight = (modalHeight.value > windowHeight.value);
       }
       return {
-        'h-5/6' : maxHeight && isOpen,
+        'h-5/6': maxHeight && isOpen,
       };
     });
 
     const onCallback = (event, name, args) => {
       modalStore.onCallback(event, name, args);
-    }
+    };
 
     onMounted(() => {
       modalEl.value = container.value.querySelector('.__fohn-modal');

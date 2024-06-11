@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import {onMounted, toRefs} from "vue";
+import { onMounted, toRefs } from 'vue';
 
 export default {
   name: 'fohn-dummy',
@@ -16,16 +16,16 @@ export default {
     },
   },
   setup: function (props, { attrs, slots, emit }) {
-    const {phrase} = toRefs(props);
+    const { phrase } = toRefs(props);
 
-    onMounted( ()=> {
+    onMounted(() => {
     });
 
     return {
       phrase,
     };
   },
-}
+};
 </script>
 
 <style scoped>

@@ -19,18 +19,18 @@
  *  - types array contains all datatype that the operator can be used with.
  *
  */
-import {computed, ref, toRefs, watch} from "vue";
-import {useFindIndexDefault} from "../utils/composable/utils";
+import { computed, ref, toRefs, watch } from 'vue';
+import { useFindIndexDefault } from '../utils/composable/utils';
 
 export default {
   name: 'fohn-table-filter-column',
   emits: ['onRemove', 'onAdd', 'onUpdate'],
   props: {
-    columns : {
+    columns: {
       type: Array,
       default: () => [],
     },
-    operators : {
+    operators: {
       type: Array,
       default: () => [],
     },
@@ -50,27 +50,26 @@ export default {
   },
 
   setup(props, { attrs, slots, emit }) {
-
     const columns = props.columns;
     // const filterValue = props.filterValue;
-    const {operators, filterValue} = toRefs(props);
+    const { operators, filterValue } = toRefs(props);
     const currentOperatorIdx = ref(0);
 
     // Get initial column idx from filterValue if any.
-    const currentColumnIdx = ref(useFindIndexDefault(columns, (column) => column.id === filterValue.value.column));
+    const currentColumnIdx = ref(useFindIndexDefault(columns, column => column.id === filterValue.value.column));
 
     // Get columnDef and id base on current idx value.
     const columnDef = computed (() => columns[currentColumnIdx.value]);
     const columnId = computed (() => columnDef.value.id);
 
     /** Filter operators base on column data type */
-    const typeOperators = computed( () => {
-      return operators.value.filter( (operator) => {
+    const typeOperators = computed(() => {
+      return operators.value.filter((operator) => {
         return operator.types.includes(columnDef.value.operatorType);
-      })
+      });
     });
 
-    currentOperatorIdx.value = useFindIndexDefault(typeOperators.value, (operator) => operator.id === filterValue.value.operator);
+    currentOperatorIdx.value = useFindIndexDefault(typeOperators.value, operator => operator.id === filterValue.value.operator);
 
     const columnOperator = computed (() => typeOperators.value[currentOperatorIdx.value].id);
     const columnRequiredValue = computed (() => typeOperators.value[currentOperatorIdx.value].requiredValue);
@@ -78,7 +77,7 @@ export default {
     /** Get what type of component is required for setting filter value. */
     const columnComponent = ref({
       id: columnDef.value.componentName,
-      props : {...columnDef.value.props, value: filterValue.value.value},
+      props: { ...columnDef.value.props, value: filterValue.value.value },
     });
 
     watch(() => filterValue.value.value, (oldV, newV) => {
@@ -96,34 +95,34 @@ export default {
       currentOperatorIdx.value = 0;
       columnComponent.value = {
         id: columnDef.value.componentName,
-        props : {...columnDef.value.props, value: ''},
-      }
+        props: { ...columnDef.value.props, value: '' },
+      };
 
       filterValue.value.column = columns[currentColumnIdx.value].id;
       filterValue.value.operator = typeOperators.value[currentOperatorIdx.value].id;
       setValue('');
-    }
+    };
 
     const setOperator = (idx) => {
       currentOperatorIdx.value = idx;
       filterValue.value.operator = typeOperators.value[currentOperatorIdx.value].id;
       filterValue.value.requiredValue = columnRequiredValue.value;
       setValue('');
-    }
+    };
 
     const setValue = (value) => {
       columnComponent.value.props.value = value;
 
       filterValue.value.value = value === '' ? null : value;
-    }
+    };
 
     const deleteFilter = (filterId) => {
       emit('onRemove', filterId);
-    }
+    };
 
     const addFilter = () => {
       emit('onAdd');
-    }
+    };
 
     return {
       columnId,
@@ -137,9 +136,9 @@ export default {
       setValue,
       deleteFilter,
       addFilter,
-      currentOperatorIdx}
-  }
-}
+      currentOperatorIdx };
+  },
+};
 </script>
 
 <template>

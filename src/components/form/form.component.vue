@@ -1,6 +1,6 @@
 <script>
 import { ref, onMounted, reactive } from 'vue';
-import { useFormStoreFactory } from "./form.store";
+import { useFormStoreFactory } from './form.store';
 
 /**
  * Handle form control and submission.
@@ -39,16 +39,17 @@ export default {
     const setBtnState = (isSubmiting) => {
       if (isSubmiting) {
         submitBtn.value?.classList.add('loading');
-      } else {
+      }
+      else {
         submitBtn.value?.classList.remove('loading');
       }
-    }
+    };
 
     /**
      * Submit form.
      */
     const submitForm = (e) => {
-      if (!isSubmitting.value)  {
+      if (!isSubmitting.value) {
         formStore.submitForm();
       }
     };

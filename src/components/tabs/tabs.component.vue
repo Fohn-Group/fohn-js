@@ -1,8 +1,8 @@
 <script>
 
-import {useTabsStoreFactory} from "./tabs.store";
-import {onMounted, ref} from "vue";
-import {storeToRefs} from "pinia";
+import { useTabsStoreFactory } from './tabs.store';
+import { onMounted, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 
 export default {
   name: 'fohn-tabs',
@@ -18,11 +18,11 @@ export default {
     },
   },
   setup: function (props, { attrs, slots, emit }) {
-    const {storeId} = props;
+    const { storeId } = props;
     const container = ref(null);
     const currentIndex = ref(0);
     const tabsStore = useTabsStoreFactory(storeId)();
-    const {tabs} = storeToRefs(tabsStore);
+    const { tabs } = storeToRefs(tabsStore);
 
     tabsStore.$subscribe((mutation, state) => {
       currentIndex.value = state.currentIdx;
@@ -34,15 +34,15 @@ export default {
 
     const activate = (idx) => {
       tabsStore.activate(idx);
-    }
+    };
 
     onMounted(() => {
       activate(props.activeTabIdx);
     });
 
-    return {container, tabs, currentIndex, activate}
+    return { container, tabs, currentIndex, activate };
   },
-}
+};
 </script>
 
 <template>

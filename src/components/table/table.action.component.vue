@@ -1,7 +1,7 @@
 <script>
-import {useTableStoreFactory} from "./table.store";
-import {computed, inject, toRefs} from "vue";
-import {toReactive} from "@vueuse/core";
+import { useTableStoreFactory } from './table.store';
+import { computed, inject, toRefs } from 'vue';
+import { toReactive } from '@vueuse/core';
 
 export default {
   name: 'fohn-table-action',
@@ -15,14 +15,14 @@ export default {
     },
     messages: {
       type: Object,
-      default: () => ({none: '', single: '', multiple: ''})
-    }
+      default: () => ({ none: '', single: '', multiple: '' }),
+    },
   },
 
   setup(props, { attrs, slots, emit }) {
-    const {actionUrl, placeHolder} = props;
-    const {isTableFetching, tableRowsSelected } = toRefs(props);
-    const {messages} = toReactive(props);
+    const { actionUrl, placeHolder } = props;
+    const { isTableFetching, tableRowsSelected } = toRefs(props);
+    const { messages } = toReactive(props);
     const tableStore = useTableStoreFactory(inject('tableStoreId'))();
 
     const isEnable = computed(() => tableRowsSelected.value > 0);
@@ -43,11 +43,11 @@ export default {
       if (!isTableFetching.value) {
         tableStore.executeAction(actionUrl, event?.currentTarget);
       }
-    }
+    };
 
-    return {execute, isEnable, isTableFetching, tableRowsSelected, actionMsg}
-  }
-}
+    return { execute, isEnable, isTableFetching, tableRowsSelected, actionMsg };
+  },
+};
 </script>
 
 <template>

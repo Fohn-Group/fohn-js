@@ -5,8 +5,8 @@
  * Value is set via a dynamic component.
  * When user change value, an onUpdateValue event is emitted.
  */
-import {ref, toRefs, watch} from "vue";
-import {useDebounceFn} from "@vueuse/core";
+import { ref, toRefs, watch } from 'vue';
+import { useDebounceFn } from '@vueuse/core';
 
 export default {
   name: 'fohn-table-filter-value',
@@ -17,26 +17,25 @@ export default {
       default: () => {
         return {
           id: 'input',
-          props : {
+          props: {
             name: '',
             type: 'text',
             value: '',
-          }
-        }
+          },
+        };
       },
     },
     debounceTime: {
       type: Number,
       default: 300,
-    }
+    },
   },
 
   setup(props, { attrs, slots, emit }) {
-
-    const {component} = toRefs(props);
+    const { component } = toRefs(props);
     const componentName = ref(component.value.id);
     let componentProps = ref(component.value.props);
-    const debounceUpdate = useDebounceFn( (value) => {
+    const debounceUpdate = useDebounceFn((value) => {
       emit('onUpdateValue', value);
     }, props.debounceTime);
 
@@ -51,11 +50,11 @@ export default {
 
     const update = (value) => {
       debounceUpdate(value);
-    }
+    };
 
-    return {componentName, componentProps, update}
-  }
-}
+    return { componentName, componentProps, update };
+  },
+};
 </script>
 
 <template>

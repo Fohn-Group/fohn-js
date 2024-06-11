@@ -30,7 +30,7 @@ export default {
     },
   },
   setup: function (props, { attrs, slots, emit }) {
-    const { items, url:groupUrl, name: groupName, icon: groupIcon } = props.group;
+    const { items, url: groupUrl, name: groupName, icon: groupIcon } = props.group;
     const { close: closeIcon, open: openIcon } = props.icons;
 
     const method = {};
@@ -50,9 +50,9 @@ export default {
       isOpen.value = !isOpen.value;
     };
 
-    const hasItems = computed( () => items.length > 0);
+    const hasItems = computed(() => items.length > 0);
 
-    method.isActiveUrl = (url) => utils().url().matchLocation(url);
+    method.isActiveUrl = url => utils().url().matchLocation(url);
 
     return {
       groupUrl,

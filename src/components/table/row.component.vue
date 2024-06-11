@@ -1,6 +1,6 @@
 <script>
-import {computed, inject, toRefs} from "vue";
-import {useTableStoreFactory} from "./table.store";
+import { computed, inject, toRefs } from 'vue';
+import { useTableStoreFactory } from './table.store';
 
 export default {
   name: 'fohn-table-row',
@@ -18,12 +18,12 @@ export default {
     const { row } = toRefs(props);
     const tableStore = useTableStoreFactory(inject('tableStoreId'))();
 
-    const isEvenRow = (idx) => (idx % 2) === 0;
+    const isEvenRow = idx => (idx % 2) === 0;
     const isSelected = computed(() => tableStore.isRowSelected(row.value.id));
 
     const toggleRow = (id) => {
       tableStore.toggleRow(id);
-    }
+    };
     return { row, isEvenRow, isActionable, isSelected, toggleRow };
   },
 };

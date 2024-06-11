@@ -1,8 +1,8 @@
 <script>
-import {computed, nextTick, ref, watch} from "vue";
-import {useTableStoreFactory} from "./table.store";
-import {useDefaultFilterValue} from "./composable/filter";
-import {storeToRefs} from "pinia";
+import { computed, nextTick, ref, watch } from 'vue';
+import { useTableStoreFactory } from './table.store';
+import { useDefaultFilterValue } from './composable/filter';
+import { storeToRefs } from 'pinia';
 
 export default {
   name: 'fohn-table-filter',
@@ -19,17 +19,17 @@ export default {
 
   setup(props, { attrs, slots, emit }) {
     const tableStore = useTableStoreFactory('myid'/* inject('tableStoreId') */)();
-    const {iconName, altIconName} = props;
+    const { iconName, altIconName } = props;
     const isActive = ref(props.isActive);
 
     const columns = props.columns;
     const operators = props.operators;
-    const {filters, activeFilters} = storeToRefs(tableStore);
+    const { filters, activeFilters } = storeToRefs(tableStore);
     if (filters.value.length === 0) {
       tableStore.addFilter(useDefaultFilterValue(columns, operators));
     }
 
-    watch( () => activeFilters.value.length, (newL, oldL) => {
+    watch(() => activeFilters.value.length, (newL, oldL) => {
       if (newL < oldL) {
         // one filter is remove.
         tableStore.fetchItems();
@@ -45,15 +45,15 @@ export default {
       tableStore.removeFilter(id);
       if (tableStore.getActiveFilterCount() === 0) {
         isActive.value = false;
-        nextTick( () => {
+        nextTick(() => {
           tableStore.addFilter(useDefaultFilterValue(columns, operators));
         });
       }
-    }
+    };
 
     const insertFilter = () => {
       tableStore.addFilter(useDefaultFilterValue(columns, operators));
-    }
+    };
 
     /**
      * Fired when a filter column value has changed.
@@ -61,7 +61,7 @@ export default {
     const updateFilter = (filter) => {
       tableStore.updateFilter(filter);
       tableStore.fetchItems();
-    }
+    };
 
     const toggleFilterIcon = () => isActive.value = !isActive.value;
 
@@ -76,9 +76,9 @@ export default {
       removeFilter,
       insertFilter,
       updateFilter,
-    }
-  }
-}
+    };
+  },
+};
 
 </script>
 

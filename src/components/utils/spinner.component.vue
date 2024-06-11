@@ -64,7 +64,7 @@ export default {
     },
   },
   setup: function (props) {
-    const {size, message, spin } = toRefs(props);
+    const { size, message, spin } = toRefs(props);
     const spinnerEl = ref(null);
     const position = ref({ top: 0, right: 0 });
 
@@ -74,56 +74,56 @@ export default {
 
     function getLineSize(sizeValue) {
       switch (sizeValue) {
-      case 'tiny': return 1;
-      case 'small': return 2;
-      case 'medium': return 3;
-      case 'large': return 3;
-      case 'big': return 4;
-      case 'huge': return 4;
-      case 'massive': return 5;
-      default: return isNumber(props.lineSize) ? props.lineSize : 4;
+        case 'tiny': return 1;
+        case 'small': return 2;
+        case 'medium': return 3;
+        case 'large': return 3;
+        case 'big': return 4;
+        case 'huge': return 4;
+        case 'massive': return 5;
+        default: return isNumber(props.lineSize) ? props.lineSize : 4;
       }
     }
 
     function getSizePx(sizeValue) {
       switch (sizeValue) {
-      case 'tiny': return 12;
-      case 'small': return 16;
-      case 'medium': return 32;
-      case 'large': return 48;
-      case 'big': return 64;
-      case 'huge': return 96;
-      case 'massive': return 128;
-      default: return isNumber(sizeValue) ? sizeValue : 32;
+        case 'tiny': return 12;
+        case 'small': return 16;
+        case 'medium': return 32;
+        case 'large': return 48;
+        case 'big': return 64;
+        case 'huge': return 96;
+        case 'massive': return 128;
+        default: return isNumber(sizeValue) ? sizeValue : 32;
       }
     }
 
     function textMarginTop(sizeValue) {
       switch (sizeValue) {
-      case 'tiny':
-      case 'small':
-      case 'medium':
-      case 'large':
-      case 'big':
-      case 'huge':
-      case 'massive':
-        return Math.min(Math.max(Math.ceil(getSizePx(sizeValue) / 8), 3), 12);
-      default:
-        return isNumber(props.spacing) ? props.spacing : 4;
+        case 'tiny':
+        case 'small':
+        case 'medium':
+        case 'large':
+        case 'big':
+        case 'huge':
+        case 'massive':
+          return Math.min(Math.max(Math.ceil(getSizePx(sizeValue) / 8), 3), 12);
+        default:
+          return isNumber(props.spacing) ? props.spacing : 4;
       }
     }
 
     function textFontSize(sizeValue) {
       switch (sizeValue) {
-      case 'tiny':
-      case 'small':
-      case 'medium':
-      case 'large':
-      case 'big':
-      case 'huge':
-      case 'massive':
-        return Math.min(Math.max(Math.ceil(getSizePx(sizeValue) * 0.4), 11), 32);
-      default: return isNumber(this.fontSize) ? this.fontSize : 13;
+        case 'tiny':
+        case 'small':
+        case 'medium':
+        case 'large':
+        case 'big':
+        case 'huge':
+        case 'massive':
+          return Math.min(Math.max(Math.ceil(getSizePx(sizeValue) * 0.4), 11), 32);
+        default: return isNumber(this.fontSize) ? this.fontSize : 13;
       }
     }
 
@@ -144,10 +144,10 @@ export default {
        */
     const spinnerStyle = computed(() => ({
       'border-radius': '100%',
-      border: getLineSize(size.value) + 'px solid ' + props.lineBgColor,
+      'border': getLineSize(size.value) + 'px solid ' + props.lineBgColor,
       'border-top': getLineSize(size.value) + 'px solid ' + props.lineFgColor,
-      width: getSizePx(size.value) + 'px',
-      height: getSizePx(size.value) + 'px',
+      'width': getSizePx(size.value) + 'px',
+      'height': getSizePx(size.value) + 'px',
     }));
 
     /**
@@ -156,7 +156,7 @@ export default {
        */
     const textStyle = computed(() => ({
       'margin-top': textMarginTop(size.value) + 'px',
-      color: props.textFgColor,
+      'color': props.textFgColor,
       'font-size': textFontSize(size.value) + 'px',
       'text-align': 'center',
     }));
@@ -208,7 +208,8 @@ export default {
     watch(spin, (spinning) => {
       if (spinning && props.spinFor) {
         spinnerEl.value.parentElement.querySelector(props.spinFor).classList.add(props.spinForClass);
-      } else if (!spinning && props.spinFor) {
+      }
+      else if (!spinning && props.spinFor) {
         spinnerEl.value.parentElement.querySelector(props.spinFor).classList.remove(props.spinForClass);
       }
     });
