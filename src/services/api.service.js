@@ -1,6 +1,6 @@
 import { createFetch } from '@vueuse/core';
-import vueService from "./vue.service";
-import fohn from "../fohn-ui";
+import vueService from './vue.service';
+import fohn from '../fohn-ui';
 
 /**
  * Singleton class
@@ -22,17 +22,18 @@ class ApiService {
             options.headers['Content-Type'] = 'application/json';
             options.headers['x-csfr-token'] = document.head.querySelector('meta[name=csfr-token]')?.content;
 
-            return { options }
+            return { options };
           },
-          onFetchError( ctx) {
+          onFetchError(ctx) {
             if (ctx.response.status >= 300 && ctx.response.status <= 499) {
               fohn.utils().browser().redirect(ctx.data?.url || '/');
-            } else {
+            }
+            else {
               apiService.handleServerError(ctx.error.message, ctx.data?.exceptionHtml);
             }
 
             return ctx;
-          }
+          },
         },
       });
     }
@@ -63,7 +64,6 @@ class ApiService {
    * @returns {UseFetchReturn<any> & PromiseLike<UseFetchReturn<any>>}
    */
   fetchAsResponse(url, options) {
-
     return this.useApiFetch(url, options).json();
   }
 
@@ -91,7 +91,7 @@ class ApiService {
 
   handleServerError(error, html) {
     console.warn(error);
-    vueService.tryDisplayException('fohn-exception-dialog', html  || 'Server Error: Check console output for more information.');
+    vueService.tryDisplayException('fohn-exception-dialog', html || 'Server Error: Check console output for more information.');
   }
 }
 

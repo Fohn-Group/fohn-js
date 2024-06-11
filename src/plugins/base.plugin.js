@@ -1,5 +1,5 @@
 import jQuery from 'jQuery';
-import apiService from "../services/api.service";
+import apiService from '../services/api.service';
 
 /**
  * Base implementation of jQuery plugin in Agile Toolkit.

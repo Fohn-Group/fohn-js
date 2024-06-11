@@ -1,5 +1,3 @@
-
-
 /**
  * Return an array index matching the testing function (fn)
  * If no index is found, then return a default one.
@@ -12,6 +10,6 @@ const useFindIndexDefault = (ar, fn, defaultIdx = 0) => {
   }
 
   return idx;
-}
+};
 
-export { useFindIndexDefault }
+export { useFindIndexDefault };

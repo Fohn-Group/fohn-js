@@ -6,7 +6,7 @@ export default {
     window.addEventListener('resize', () => {
       const width = document.documentElement.clientWidth;
       const height = document.documentElement.clientHeight;
-      onResizeCallback({width, height});
+      onResizeCallback({ width, height });
     });
   },
   unmounted: () => {

@@ -1,8 +1,8 @@
-import {defineStore} from 'pinia';
-import {useLocalStorage} from "@vueuse/core";
-import apiService from "../../services/api.service";
-import {utils} from "../../utils";
-import {watch} from "vue";
+import { defineStore } from 'pinia';
+import { useLocalStorage } from '@vueuse/core';
+import apiService from '../../services/api.service';
+import { utils } from '../../utils';
+import { watch } from 'vue';
 
 /**
  * Return a Pinia store definition function.
@@ -33,7 +33,7 @@ export const useTableStoreFactory = (id) => {
     }),
     getters: {
       isRowSelected: (state) => {
-        return (id) => state.selectedRows.has(id);
+        return id => state.selectedRows.has(id);
       },
       hasRowSelected: (state) => {
         return state.selectedRows.size > 0;
@@ -42,10 +42,10 @@ export const useTableStoreFactory = (id) => {
         return state.tableState.filters;
       },
       activeFilters: (state) => {
-        return state.tableState.filters.filter( (f) => {
+        return state.tableState.filters.filter((f) => {
           return (f.value !== null && f.requiredValue) || !f.requiredValue;
         }).map((filter) => {
-          return {column: filter.column, operator: filter.operator, value: filter.value}
+          return { column: filter.column, operator: filter.operator, value: filter.value };
         });
       },
     },
@@ -54,16 +54,16 @@ export const useTableStoreFactory = (id) => {
         this.tableState.filters = filters;
       },
       addFilter(filter) {
-        this.tableState.filters.push({...filter, filterId: getFilterNextId(this.tableState.filters)});
+        this.tableState.filters.push({ ...filter, filterId: getFilterNextId(this.tableState.filters) });
       },
       removeFilter(id) {
-        const idx = this.tableState.filters.findIndex( (f) => f.filterId === id);
+        const idx = this.tableState.filters.findIndex(f => f.filterId === id);
         this.tableState.filters.splice(idx, 1);
       },
       updateFilter(filter) {
-        this.tableState.filters.forEach( (f) => {
+        this.tableState.filters.forEach((f) => {
           if (f.filterId === filter.filterId) {
-            f = {...filter};
+            f = { ...filter };
           }
         });
       },
@@ -90,7 +90,7 @@ export const useTableStoreFactory = (id) => {
             ipp: this.tableState.itemsPerPage,
             filters: this.activeFilters,
           }),
-        }
+        };
 
         const url = fohn.utils().url().appendParams(this.url, args);
         const { isFetching, data } = apiService.fetchAsResponse(url, options);
@@ -113,27 +113,28 @@ export const useTableStoreFactory = (id) => {
         });
       },
       updateRow(id, newRowValue) {
-        this.currentRows.forEach( (tableRow) => {
+        this.currentRows.forEach((tableRow) => {
           if (tableRow.id === id) {
-            Object.keys(newRowValue).forEach( (key) => {
+            Object.keys(newRowValue).forEach((key) => {
               if (tableRow.cells[key]) {
                 tableRow.cells[key].value = newRowValue[key];
               }
-            })
+            });
           }
         });
       },
       toggleRow(id) {
-        if(this.isRowSelected(id)) {
+        if (this.isRowSelected(id)) {
           this.selectedRows.delete(id);
-        } else {
+        }
+        else {
           this.selectedRows.add(id);
         }
       },
-      addRowIdToSelection (id) {
+      addRowIdToSelection(id) {
         this.selectedRows.add(id);
       },
-      removeRowIdFromSelection (id) {
+      removeRowIdFromSelection(id) {
         this.selectedRows.delete(id);
       },
       clearSelectedRows() {
@@ -141,7 +142,7 @@ export const useTableStoreFactory = (id) => {
       },
       deleteRow(id) {
         this.currentRows = [...this.currentRows.filter((tableRow) => {
-          return tableRow.id !== id
+          return tableRow.id !== id;
         })];
         this.fetchItems();
       },
@@ -154,7 +155,8 @@ export const useTableStoreFactory = (id) => {
           const direction = determineSortDirection(columnName, this.tableState.sort.columnName, this.tableState.sort.direction);
           this.tableState.sort.columnName = direction === 'none' ? '' : columnName;
           this.tableState.sort.direction = direction;
-        } else {
+        }
+        else {
           this.tableState.sort.direction = dir;
           this.tableState.sort.columnName = columnName;
         }
@@ -201,7 +203,7 @@ export const useTableStoreFactory = (id) => {
           body: utils().json().stringify({
             ids: Array.from(this.selectedRows),
           }),
-        }
+        };
 
         targetElement.classList.add('loading');
         const { isFetching, data, onFetchFinally, onFetchError } = apiService.fetchAsResponse(url, options);
@@ -210,7 +212,7 @@ export const useTableStoreFactory = (id) => {
           this.isFetching = inProgress;
         });
 
-        onFetchFinally( () => {
+        onFetchFinally(() => {
           const results = data.value || {};
           if (results.jsRendered) {
             apiService.evalResponse(results.jsRendered);
@@ -224,10 +226,10 @@ export const useTableStoreFactory = (id) => {
           targetElement.classList.remove('loading');
         });
 
-        onFetchError( (error) => {
+        onFetchError((error) => {
           console.error(error);
         });
-      }
+      },
     },
   });
 
@@ -248,20 +250,23 @@ function getFilterNextId(filters) {
     }
   }
 
-  return  maxId + 1;
+  return maxId + 1;
 }
 function determineSortDirection(newColumnName, oldColumName, currentDirection, newDirection = null) {
   let direction;
   if (newColumnName !== oldColumName) {
     direction = 'asc';
-  } else {
+  }
+  else {
     if (newDirection) {
       direction = newDirection;
-    } else {
+    }
+    else {
       // find index of current direction and return next one
-      if (currentDirection === 'none'){
+      if (currentDirection === 'none') {
         direction = 'asc';
-      } else if (currentDirection === 'asc') {
+      }
+      else if (currentDirection === 'asc') {
         direction = 'desc';
       }
       else {

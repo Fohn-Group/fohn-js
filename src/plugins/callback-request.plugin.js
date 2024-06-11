@@ -32,7 +32,8 @@ export default class CallbackRequest extends BasePlugin {
       if (window.confirm(confirm)) {
         response = this.sendRequest(this.$el, uri, fetchOptions);
       }
-    } else if (!this.$el.hasClass('loading')) {
+    }
+    else if (!this.$el.hasClass('loading')) {
       response = this.sendRequest(this.$el, uri, fetchOptions);
     }
 

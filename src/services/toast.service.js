@@ -1,7 +1,7 @@
-import { createApp } from "vue";
-import Toast, { useToast } from "vue-toastification";
+import { createApp } from 'vue';
+import Toast, { useToast } from 'vue-toastification';
 import UiToast from '../components/toast.component.vue';
-import {utils} from "../utils";
+import { utils } from '../utils';
 
 /**
  * Singleton class
@@ -22,7 +22,7 @@ class ToastService {
       this.service = {
         isReady: false,
         queue: [],
-      }
+      };
     }
   }
 
@@ -39,16 +39,16 @@ class ToastService {
         toastService: this.instance,
       },
       template: '<div></div>',
-      data() {return {} },
+      data() { return {}; },
       mounted() {
         // make sure toastApp is ready to go.
         setTimeout(() => {
           this.toastService.markAsReady();
           this.toastService.flush();
         }, 200);
-      }
-    }, {toastService: this.instance});
-    toastApp.use(Toast, {container: document.querySelector(toastContainerSelector)});
+      },
+    }, { toastService: this.instance });
+    toastApp.use(Toast, { container: document.querySelector(toastContainerSelector) });
     toastApp.mount(toastContainerSelector);
   }
 
@@ -80,11 +80,10 @@ class ToastService {
    *
    */
   notify(title, message = '', options = {}, sanitize = true) {
-
     const htmlContent = sanitize ? utils().text().sanitize(message) : message;
 
     if (!this.service.isReady) {
-      this.addQueue({title: title, message: htmlContent, options: options});
+      this.addQueue({ title: title, message: htmlContent, options: options });
       return;
     }
 
@@ -93,7 +92,7 @@ class ToastService {
       props: {
         title: title,
         message: htmlContent,
-      }
+      },
     };
 
     useToast()(content, options);

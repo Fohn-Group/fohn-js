@@ -14,7 +14,7 @@ const options = () => {
   };
   return {
     set: (name, value) => { props[name] = value; },
-    get: (name) => props[name],
+    get: name => props[name],
   };
 };
 
@@ -52,12 +52,13 @@ const utils = () => ({
           }
           return value;
         });
-      } catch (e) {
+      }
+      catch (e) {
         console.error(e);
         return onError;
       }
     },
-    stringify: (data) => JSON.stringify(data, (key, value) => {
+    stringify: data => JSON.stringify(data, (key, value) => {
       if (typeof value === 'bigint') {
         return value.toString();
       }
@@ -81,8 +82,8 @@ const utils = () => ({
     },
   }),
   url: () => ({
-    matchLocation: (refUrlPath) => refUrlPath === (window.location.pathname),
-    getBaseUrl: (url) => url.split('?')[0],
+    matchLocation: refUrlPath => refUrlPath === (window.location.pathname),
+    getBaseUrl: url => url.split('?')[0],
     getQueryParams: (urlSlug) => {
       const params = {};
       for (const [k, v] of new URLSearchParams(urlSlug.split('?')[1])) {
@@ -100,7 +101,7 @@ const utils = () => ({
     appendParams: (url, params) => {
       const baseUrl = utils().url().getBaseUrl(url);
       const urlParams = utils().url().getQueryParams(url);
-      return utils().url().addParams(baseUrl, {...urlParams, ...params});
+      return utils().url().addParams(baseUrl, { ...urlParams, ...params });
     },
     removeParam: (urlSlug, paramToRemove) => {
       let baseUrl = urlSlug.split('?')[0];
@@ -121,7 +122,7 @@ const utils = () => ({
     },
     windowOpen: (url, params = {}, target = '_blank') => {
       window.open(utils().url().addParams(url, params), target);
-    }
+    },
   }),
 });
 

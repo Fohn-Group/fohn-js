@@ -1,10 +1,10 @@
-import {createApp, defineAsyncComponent, ref} from 'vue';
+import { createApp, defineAsyncComponent, ref } from 'vue';
 import { createPinia } from 'pinia';
 import ClickOutside from '../directives/click-outside.directive';
 import { focus, resize, esc } from '../directives/commons.directive';
 import Components from '../components/components-install';
 import jQuery from 'jQuery';
-import fohn from "../fohn-ui";
+import fohn from '../fohn-ui';
 
 // Vue loader component to display while dynamic component is loading.
 const loaderComponent = {
@@ -28,7 +28,10 @@ const directives = [
 // Return async component that will load on demand.
 // eslint-disable-next-line
 const componentFactory = (name, jsLoader) => defineAsyncComponent({
-  loader: () => jsLoader().then((r) => { fohn.vueService.markComponentLoaded(name); return r; }),
+  loader: () => jsLoader().then((r) => {
+    fohn.vueService.markComponentLoaded(name);
+    return r;
+  }),
   loadingComponent: loaderComponent,
   errorComponent: errorComponent,
   delay: 200,
@@ -54,16 +57,16 @@ class VueService {
 
   /**
    * Will display a modal containing the exception as html if elementId exist.
-   * 
+   *
    * @param elementId
    * @param exceptionHtml
    */
   tryDisplayException(elementId, exceptionHtml) {
     if (document.getElementById(elementId)) {
       if (!this.vues.has(elementId)) {
-        const app = createApp( {
+        const app = createApp({
           template: '<div><fohn-ui-exception :html="html" :isOpen="isOpen" ></fohn-ui-exception></div>',
-          data: () => ({html: exceptionHtml, isOpen: true}),
+          data: () => ({ html: exceptionHtml, isOpen: true }),
         });
         app.use(Components);
 
@@ -76,8 +79,9 @@ class VueService {
           vm: vm,
           isLoaded: true,
         });
-      } else {
-        const dialog =  this.vues.get(elementId).vm;
+      }
+      else {
+        const dialog = this.vues.get(elementId).vm;
         dialog.html = exceptionHtml;
         dialog.isOpen = true;
       }
@@ -89,18 +93,18 @@ class VueService {
    * Set default components to use with.
    * Inject default functionality.
    */
-  vueAppFactory( rootData, componentName ) {
+  vueAppFactory(rootData, componentName) {
     const app = createApp({
       name: componentName + '-app',
-      setup: function() {
+      setup: function () {
         const key = ref(0);
 
         const forceRerender = () => {
           key.value += 1;
-        }
+        };
 
         return { ...rootData, key, forceRerender, jQuery, fohn };
-      }
+      },
     });
 
     app.use(this.piniaStore);
@@ -161,7 +165,7 @@ class VueService {
      * Check if all components on page are ready and fully loaded.
      */
   areComponentsLoaded() {
-    return this.vues.filter((component) => component.isLoaded === false).length === 0;
+    return this.vues.filter(component => component.isLoaded === false).length === 0;
   }
 
   addStore(id, store) {

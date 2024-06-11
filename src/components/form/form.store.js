@@ -1,6 +1,6 @@
-import {defineStore} from "pinia";
-import apiService from "../../services/api.service";
-import { watch } from "vue";
+import { defineStore } from 'pinia';
+import apiService from '../../services/api.service';
+import { watch } from 'vue';
 
 export const useFormStoreFactory = (id) => {
   const store = defineStore(id, {
@@ -32,7 +32,7 @@ export const useFormStoreFactory = (id) => {
       fetchControlValues() {
         const options = {
           method: 'POST',
-          body: JSON.stringify({id: this.recordId}),
+          body: JSON.stringify({ id: this.recordId }),
         };
 
         const { isFetching, data } = apiService.fetchAsResponse(this.valuesUrl, options);
@@ -43,12 +43,13 @@ export const useFormStoreFactory = (id) => {
 
         watch(data, (newData) => {
           if (newData.results?.status === 'success') {
-            Object.keys(newData.results?.values || []).forEach( (controlName) => {
+            Object.keys(newData.results?.values || []).forEach((controlName) => {
               if (this.controls.has(controlName)) {
                 this.controls.get(controlName).value = newData.results.values[controlName];
               }
             });
-          } else {
+          }
+          else {
             console.error('Record id return an error: ' + this.recordId);
             this.recordId = null;
           }
@@ -63,11 +64,11 @@ export const useFormStoreFactory = (id) => {
       submitForm() {
         const options = {
           method: 'POST',
-          body: JSON.stringify({__formRecordId: this.recordId, ...this.getFormData(this.formEl)}),
+          body: JSON.stringify({ __formRecordId: this.recordId, ...this.getFormData(this.formEl) }),
         };
 
         const { isFetching, data, onFetchFinally } = apiService.fetchAsResponse(this.submitUrl, options);
-        onFetchFinally( () => {
+        onFetchFinally(() => {
           const js = data.value?.jsRendered;
           if (js) {
             apiService.evalResponse(js);
@@ -138,16 +139,16 @@ export const useFormStoreFactory = (id) => {
       getFormData(el) {
         const data = {};
         const formData = new FormData(el);
-        for( const key of formData.keys()) {
+        for (const key of formData.keys()) {
           data[key] = formData.get(key);
         }
 
         return data;
-      }
-    }
+      },
+    },
   });
 
   fohn.vueService.addStore(id, store);
 
   return store;
-}
+};

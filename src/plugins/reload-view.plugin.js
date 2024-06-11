@@ -12,9 +12,9 @@ export default class ReloadView extends BasePlugin {
       return;
     }
 
-    const { uri, payload, afterSuccess, loadContext, fetchOptions }  = this.settings;
+    const { uri, payload, afterSuccess, loadContext, fetchOptions } = this.settings;
     let $el = this.$el;
-    
+
     const url = utils().url().appendParams(uri, payload);
 
     fetchOptions.method = 'GET';
@@ -22,13 +22,13 @@ export default class ReloadView extends BasePlugin {
     if (loadContext) {
       $el = jQuery(loadContext);
     }
-    
+
     this.sendRequest($el, url, fetchOptions)
       .then(({ success, id, html, jsRendered }) => {
         if (success && id && html) {
           const result = jQuery('#' + id).replaceWith(html);
           if (!result.length) {
-            throw ('Unable to replace element with id: ' + id)
+            throw ('Unable to replace element with id: ' + id);
           }
         }
         if (success && jsRendered) {

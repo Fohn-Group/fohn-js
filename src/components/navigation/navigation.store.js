@@ -7,8 +7,8 @@ export const useNavigationStoreFactory = (id) => {
       status: null,
     }),
     getters: {
-      isOpen: (state) => state.status === 'open',
-      inMobileMode: (state) => state.mode === 'mobile',
+      isOpen: state => state.status === 'open',
+      inMobileMode: state => state.mode === 'mobile',
     },
     actions: {
       openNavigation() {
@@ -27,6 +27,4 @@ export const useNavigationStoreFactory = (id) => {
   fohn.vueService.addStore(id, store);
 
   return store;
-}
-
-
+};
