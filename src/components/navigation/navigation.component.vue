@@ -42,10 +42,10 @@ export default {
     const navigationStore = useNavigationStoreFactory('Navigation')();
     const transitionReady = ref(false);
     const breakPointValue = {
-      sm: 640,
-      md: 768,
-      lg: 1024,
-      xl: 1280,
+      'sm': 640,
+      'md': 768,
+      'lg': 1024,
+      'xl': 1280,
       '2xl': 1536,
     };
 
@@ -89,8 +89,8 @@ export default {
 
       return {
         [width]: true,
-        transition: transitionReady.value,
-        transform: true,
+        'transition': transitionReady.value,
+        'transform': true,
         'translate-x-0': !inMobileMode.value || (inMobileMode.value && isOpen.value),
         [minusTranslate]: inMobileMode.value && !isOpen.value,
       };
