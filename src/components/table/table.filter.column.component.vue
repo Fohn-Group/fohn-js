@@ -57,7 +57,6 @@ export default {
     const currentOperatorIdx = ref(0);
 
     // Get initial column idx from filterValue if any.
-    // eslint-disable-next-line max-len
     const currentColumnIdx = ref(useFindIndexDefault(columns, (column) => column.id === filterValue.value.column));
 
     // Get columnDef and id base on current idx value.
@@ -71,7 +70,6 @@ export default {
       })
     });
 
-    // eslint-disable-next-line max-len
     currentOperatorIdx.value = useFindIndexDefault(typeOperators.value, (operator) => operator.id === filterValue.value.operator);
 
     const columnOperator = computed (() => typeOperators.value[currentOperatorIdx.value].id);

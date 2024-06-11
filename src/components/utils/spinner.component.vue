@@ -11,6 +11,7 @@ import {
 } from 'vue';
 
 export default {
+  name: 'fohn-spinner',
   props: {
     spin: {
       type: Boolean,

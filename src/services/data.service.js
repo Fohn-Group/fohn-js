@@ -56,7 +56,7 @@ class DataService {
     try {
       utils.json().parse(str);
     } catch (e) {
-      console.error('Invalid json string.');
+      console.error(e);
       return false;
     }
     return true;
@@ -159,7 +159,6 @@ class DataService {
     }
 
     if (previous) {
-      // eslint-disable-next-line max-len
       this.setData(item, utils.json().stringify(Object.assign(utils.json().parse(previous), utils.json().parse(value))), type);
     } else {
       this.setData(item, value, type);

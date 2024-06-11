@@ -151,7 +151,6 @@ export const useTableStoreFactory = (id) => {
       },
       sortTable(columnName, dir = '') {
         if (!dir) {
-          // eslint-disable-next-line max-len
           const direction = determineSortDirection(columnName, this.tableState.sort.columnName, this.tableState.sort.direction);
           this.tableState.sort.columnName = direction === 'none' ? '' : columnName;
           this.tableState.sort.direction = direction;

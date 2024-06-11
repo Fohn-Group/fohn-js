@@ -45,7 +45,6 @@ class ApiService {
      * @param context // 'this' context where code is evaluate.
      */
   evalResponse(code, context = window) {
-    // eslint-disable-next-line
     new Function('$', `"use strict"; ${code}`).call(context, jQuery);
   }
 

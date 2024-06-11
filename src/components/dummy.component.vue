@@ -16,7 +16,7 @@ export default {
     },
   },
   setup: function (props, { attrs, slots, emit }) {
-    const { phrase } = toRefs(props);
+    const {phrase} = toRefs(props);
 
     onMounted( ()=> {
     });

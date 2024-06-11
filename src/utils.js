@@ -48,12 +48,12 @@ const utils = () => ({
       try {
         return JSON.parse(str, (key, value) => {
           if (typeof value === 'string' && /^\d+n$/.test(value)) {
-            // eslint-disable-next-line no-undef
             return BigInt(value.slice(0, -1));
           }
           return value;
         });
       } catch (e) {
+        console.error(e);
         return onError;
       }
     },
