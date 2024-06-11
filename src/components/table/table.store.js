@@ -41,6 +41,12 @@ export const useTableStoreFactory = (id) => {
       filters: (state) => {
         return state.tableState.filters;
       },
+      /**
+       *  While filters hold internal filter component data, activeFilters hold
+       *  the real filters data to be sent to server. It will only return filter that
+       *  are set with a value or filter where operate does not need a value.
+       *
+       */
       activeFilters: (state) => {
         return state.tableState.filters.filter((f) => {
           return (f.value !== null && f.requiredValue) || !f.requiredValue;

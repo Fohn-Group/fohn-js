@@ -1,5 +1,10 @@
 <script>
-import { computed, nextTick, ref, watch } from 'vue';
+/**
+ * Manage an array of Filters to be applied on table.
+ * Special icon is used when filter Ui is display or not.
+ * The number of filters is also shown.
+ */
+import { computed, inject, nextTick, ref, watch } from 'vue';
 import { useTableStoreFactory } from './table.store';
 import { useDefaultFilterValue } from './composable/filter';
 import { storeToRefs } from 'pinia';
@@ -17,8 +22,8 @@ export default {
     operators: Array,
   },
 
-  setup(props, { attrs, slots, emit }) {
-    const tableStore = useTableStoreFactory('myid'/* inject('tableStoreId') */)();
+  setup(props) {
+    const tableStore = useTableStoreFactory(inject('tableStoreId', 'myId'))();
     const { iconName, altIconName } = props;
     const isActive = ref(props.isActive);
 
