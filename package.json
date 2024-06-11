@@ -34,7 +34,7 @@
     "eslint-config-defaults": "^9.0.0",
     "eslint-plugin-vue": "^9.26.0",
     "globals": "^15.4.0",
-    "style-loader": "^3.3.1",
+    "style-loader": "^4.0.0",
     "terser-webpack-plugin": "^5.1.1",
     "vue-loader": "^17.0.0",
     "vue-template-compiler": "^2.6.12",
