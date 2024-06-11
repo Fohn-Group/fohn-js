@@ -64,7 +64,7 @@ export default {
     },
   },
   setup: function (props) {
-    const { size, message, spin } = toRefs(props);
+    const {size, message, spin } = toRefs(props);
     const spinnerEl = ref(null);
     const position = ref({ top: 0, right: 0 });
 

@@ -69,7 +69,7 @@ const utils = () => ({
       const element = document.createElement('div');
       element.innerText = text;
       return element.innerHTML;
-    }
+    },
   }),
   date: () => ({
     // fix date parsing for different time zone if time is not supply.
