@@ -27,4 +27,7 @@ export default [
       'vue/no-dupe-keys': ['off'],
     },
   },
+  {
+    ignores: ['babel.config.js', 'webpack.config.js'],
+  }
 ];
