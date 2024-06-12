@@ -25,6 +25,7 @@ export const useTableStoreFactory = (id) => {
           direction: 'none',
         },
         filters: [],
+        matchType: 'and',
       }),
       currentRows: [],
       selectedRows: new Set(),
@@ -40,6 +41,9 @@ export const useTableStoreFactory = (id) => {
       },
       filters: (state) => {
         return state.tableState.filters;
+      },
+      matchType: (state) => {
+        return state.tableState.matchType;
       },
       /**
        *  While filters hold internal filter component data, activeFilters hold
@@ -72,6 +76,9 @@ export const useTableStoreFactory = (id) => {
             f = { ...filter };
           }
         });
+      },
+      setFilterMatchType(type) {
+        this.tableState.matchType = type;
       },
       getActiveFilterCount() {
         return this.tableState.filters.length;

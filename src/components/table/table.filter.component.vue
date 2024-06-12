@@ -20,16 +20,17 @@ export default {
     altIconName: String,
     columns: Array,
     operators: Array,
+    matchTypes: Array,
   },
 
   setup(props) {
     const tableStore = useTableStoreFactory(inject('tableStoreId', 'myId'))();
-    const { iconName, altIconName } = props;
+    const { iconName, altIconName, matchTypes } = props;
     const isActive = ref(props.isActive);
 
     const columns = props.columns;
     const operators = props.operators;
-    const { filters, activeFilters } = storeToRefs(tableStore);
+    const { filters, activeFilters, matchType } = storeToRefs(tableStore);
     if (filters.value.length === 0) {
       tableStore.addFilter(useDefaultFilterValue(columns, operators));
     }
@@ -68,12 +69,18 @@ export default {
       tableStore.fetchItems();
     };
 
+    const setMatchType = (idx) => {
+      tableStore.setFilterMatchType(matchTypes[idx].id);
+    };
+
     const toggleFilterIcon = () => isActive.value = !isActive.value;
 
     return {
       iconCss,
       toggleFilterIcon,
       isActive,
+      matchType,
+      matchTypes,
       columns,
       operators,
       filters,
@@ -81,6 +88,7 @@ export default {
       removeFilter,
       insertFilter,
       updateFilter,
+      setMatchType,
     };
   },
 };
@@ -92,6 +100,8 @@ export default {
       :iconCss=iconCss
       :toggleFilterIcon=toggleFilterIcon
       :isActive="isActive"
+      :matchType="matchType"
+      :matchTypes="matchTypes"
       :columns="columns"
       :operators="operators"
       :filters="filters"
@@ -99,6 +109,7 @@ export default {
       :removeFilter="removeFilter"
       :insertFilter="insertFilter"
       :updateFilter="updateFilter"
+      :setMatchType="setMatchType"
       v-bind="$attrs">table filter</slot>
 </template>
 
