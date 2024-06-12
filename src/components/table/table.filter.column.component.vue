@@ -9,9 +9,11 @@
  * {
  *    id: 'name',
  *    label: 'Name',
- *    componentName: 'input' // the component name use to set filter value, either input or flat-pickr
  *    operatorType: 'text'  // the type of operator need for the operators list
- *    'props' : {} // The value component props. When component is input, this represented the html input attrs.
+ *    component {
+ *      name: 'input' // the component name use to set filter value, either input or flat-pickr
+ *      'props' : {} // The value component props. When component is input, this represented the html input attrs.
+ *    }
  *  }
  *
  * Operators contains an array of operator definition
@@ -76,8 +78,8 @@ export default {
 
     /** Get what type of component is required for setting filter value. */
     const columnComponent = ref({
-      id: columnDef.value.componentName,
-      props: { ...columnDef.value.props, value: filterValue.value.value },
+      id: columnDef.value.component.name,
+      props: { ...columnDef.value.component.props, value: filterValue.value.value },
     });
 
     watch(() => filterValue.value.value, (oldV, newV) => {
@@ -94,8 +96,8 @@ export default {
       currentColumnIdx.value = idx;
       currentOperatorIdx.value = 0;
       columnComponent.value = {
-        id: columnDef.value.componentName,
-        props: { ...columnDef.value.props, value: '' },
+        id: columnDef.value.component.name,
+        props: { ...columnDef.value.component.props, value: '' },
       };
 
       filterValue.value.column = columns[currentColumnIdx.value].id;
