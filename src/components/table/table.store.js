@@ -104,7 +104,10 @@ export const useTableStoreFactory = (id) => {
             _q: this.tableState.currentQuery,
             sorting: this.tableState.sort,
             ipp: this.tableState.itemsPerPage,
-            filters: this.activeFilters,
+            filters: {
+              matchType: this.tableState.matchType,
+              columns: this.tableState.filters,
+            },
           }),
         };
 
