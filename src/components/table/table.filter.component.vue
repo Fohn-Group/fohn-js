@@ -73,6 +73,14 @@ export default {
       tableStore.setFilterMatchType(matchTypes[idx].id);
     };
 
+    const removeAll = () => {
+      tableStore.removeAllFilter();
+      isActive.value = false;
+      nextTick(() => {
+        tableStore.addFilter(useDefaultFilterValue(columns, operators));
+      });
+    };
+
     const toggleFilterIcon = () => isActive.value = !isActive.value;
 
     return {
@@ -84,6 +92,7 @@ export default {
       columns,
       operators,
       filters,
+      removeAll,
       activeFilters,
       removeFilter,
       insertFilter,
@@ -105,6 +114,7 @@ export default {
       :columns="columns"
       :operators="operators"
       :filters="filters"
+      :removeAll="removeAll"
       :filterCount="activeFilters.length"
       :removeFilter="removeFilter"
       :insertFilter="insertFilter"

@@ -66,6 +66,9 @@ export const useTableStoreFactory = (id) => {
       addFilter(filter) {
         this.tableState.filters.push({ ...filter, filterId: getFilterNextId(this.tableState.filters) });
       },
+      removeAllFilter() {
+        this.tableState.filters = [];
+      },
       removeFilter(id) {
         const idx = this.tableState.filters.findIndex(f => f.filterId === id);
         this.tableState.filters.splice(idx, 1);
