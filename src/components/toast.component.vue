@@ -13,9 +13,9 @@ export default {
     message: String,
   },
   setup: function (props, { attrs, slots, emit }) {
-    const {title, message} = props;
+    const { title, message } = props;
 
     return { title, message };
-  }
-}
+  },
+};
 </script>

@@ -1,7 +1,7 @@
 <script>
 
-import { computed, toRefs } from "vue";
-import range from "lodash.range";
+import { computed, toRefs } from 'vue';
+import range from 'lodash.range';
 
 export default {
   name: 'fohn-table-paginator',
@@ -34,7 +34,7 @@ export default {
     itemsPerPages: {
       type: Array,
       default: () => [10, 25, 50, 100],
-    }
+    },
   },
   emits: {
     loadPage: (number) => {
@@ -48,7 +48,7 @@ export default {
         return true;
       }
       return false;
-    }
+    },
   },
   setup: function (props, { attrs, slots, emit }) {
     const { pageLimit, itemsPerPages } = props;
@@ -59,18 +59,18 @@ export default {
      * Computed total pages number base on totalItems and item per page.
      * @type {ComputedRef<unknown>}
      */
-    const totalPages = computed( () => {
+    const totalPages = computed(() => {
       if (totalItems.value < itemsPerPage.value) {
         return 1;
       }
       return Math.ceil(totalItems.value / itemsPerPage.value);
     });
 
-    const fromItem = computed( () => {
-      return ((itemsPerPage.value * currentPage.value) - itemsPerPage.value) + 1 ;
+    const fromItem = computed(() => {
+      return ((itemsPerPage.value * currentPage.value) - itemsPerPage.value) + 1;
     });
 
-    const toItem = computed( () => {
+    const toItem = computed(() => {
       return (fromItem.value + itemsPerPage.value) - 1;
     });
 
@@ -78,21 +78,21 @@ export default {
      * Computed which page buttons should be display according to current page and page limit value.
      * @type {ComputedRef<*[]>}
      */
-    const pageRange = computed( () => {
+    const pageRange = computed(() => {
       const nextPage = currentPage.value + 1;
       const from1 = nextPage - Math.round(pageLimit / 2);
       const from2 = totalPages.value + 1 - pageLimit;
-      const from = Math.max(Math.min(from1, from2), 1)
+      const from = Math.max(Math.min(from1, from2), 1);
       const to = Math.min(from + pageLimit - 1, totalPages.value);
 
-      return range(from, to + 1).map((page) => page);
+      return range(from, to + 1).map(page => page);
     });
 
     const emitPageRequest = (page) => {
       if (!disabled.value) {
         emit('loadPage', page);
       }
-    }
+    };
 
     const setItemsPerPage = (numberOfItems) => {
       if (itemsPerPages.value !== numberOfItems) {

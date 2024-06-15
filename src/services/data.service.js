@@ -31,7 +31,8 @@ class DataService {
       storage.setItem(x, x);
       storage.removeItem(x);
       return true;
-    } catch (e) {
+    }
+    catch (e) {
       return e instanceof DOMException && (
       // everything except Firefox
         e.code === 22
@@ -55,8 +56,9 @@ class DataService {
   isJsonString(str) {
     try {
       utils.json().parse(str);
-    } catch (e) {
-      console.error('Invalid json string.');
+    }
+    catch (e) {
+      console.error(e);
       return false;
     }
     return true;
@@ -74,7 +76,8 @@ class DataService {
   setData(item, value, type = 'local') {
     if (this.hasStorage) {
       this.storage[type].setItem(item, value);
-    } else {
+    }
+    else {
       console.error('Session storage is not available in your Browser.');
     }
   }
@@ -159,9 +162,9 @@ class DataService {
     }
 
     if (previous) {
-      // eslint-disable-next-line max-len
       this.setData(item, utils.json().stringify(Object.assign(utils.json().parse(previous), utils.json().parse(value))), type);
-    } else {
+    }
+    else {
       this.setData(item, value, type);
     }
   }

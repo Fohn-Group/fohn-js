@@ -13,7 +13,7 @@ jobs:
           node-version: '20.x'
 
       - name: clean-install
-        run: npm ci
+        run: npm install
 
       - name: lint check
         run: npm run lint

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
-import {utils} from "../../utils";
-import apiService from "../../services/api.service";
-import vueService from "../../services/vue.service";
+import { utils } from '../../utils';
+import apiService from '../../services/api.service';
+import vueService from '../../services/vue.service';
 
 /**
  * Return a Pinia store definition function.
@@ -23,7 +23,7 @@ export const useModalStoreFactory = (id) => {
       status: 'close',
       isLoading: false,
       contentId: null,
-      containerEl : null,
+      containerEl: null,
       message: '',
     }),
     getters: {
@@ -34,14 +34,15 @@ export const useModalStoreFactory = (id) => {
         this.isLoading = true;
         const options = {
           method: 'GET',
-        }
+        };
 
         const { success, id, html, jsRendered } = await apiService.fetchAsResult(url, options);
         if (success && id && html) {
           const modalContent = document.getElementById(id);
           if (modalContent) {
             modalContent.innerHTML = html;
-          } else {
+          }
+          else {
             console.error('Cannot find modal content.');
           }
           this.contentId = id;
@@ -57,7 +58,7 @@ export const useModalStoreFactory = (id) => {
        * @param options
        */
       openModal(options = {}) {
-        const {message, args = {}, payload = {}} = options;
+        const { message, args = {}, payload = {} } = options;
         if (message) {
           this.setMessage(message);
         }
@@ -88,15 +89,15 @@ export const useModalStoreFactory = (id) => {
         event.target.classList.add('loading');
         const url = utils().url().appendParams(this.callbacks[name], args);
 
-        const {data, onFetchFinally, onFetchResponse} = apiService.fetchAsResponse(url, options);
-        onFetchResponse( () => {
-          const {success, jsRendered } = data.value;
+        const { data, onFetchFinally, onFetchResponse } = apiService.fetchAsResponse(url, options);
+        onFetchResponse(() => {
+          const { success, jsRendered } = data.value;
           if (success && jsRendered) {
             apiService.evalResponse(jsRendered, this.$el);
           }
         });
 
-        onFetchFinally( () => {
+        onFetchFinally(() => {
           event.target.classList.remove('loading');
         });
       },
@@ -106,4 +107,4 @@ export const useModalStoreFactory = (id) => {
   vueService.addStore(id, store);
 
   return store;
-}
+};

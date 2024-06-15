@@ -15,9 +15,9 @@
  * }
  *
  */
-import {computed, ref, watch, onMounted, reactive} from 'vue';
-import {useDebounceFn} from "@vueuse/core";
-import { useFormStoreFactory } from "./form.store";
+import { computed, ref, watch, onMounted, reactive } from 'vue';
+import { useDebounceFn } from '@vueuse/core';
+import { useFormStoreFactory } from './form.store';
 
 export default {
   name: 'fohn-control',
@@ -49,7 +49,7 @@ export default {
 
     // Create store and subscribed to control changes.
     const formStore = useFormStoreFactory(formStoreId)();
-    formStore.$subscribe( (mutation, state) => {
+    formStore.$subscribe((mutation, state) => {
       inputAttrs.value = state.controls.get(inputAttrs.name).value;
     });
 
@@ -92,13 +92,13 @@ export default {
     };
 
     // Check for input value changes.
-    watch(() =>  inputAttrs.value, (newValue) => {
+    watch(() => inputAttrs.value, (newValue) => {
       formStore.clearError(inputAttrs.name);
       onValueChange(newValue);
     });
 
     onMounted(() => {
-      formStore.registerControl(  inputAttrs.name, {
+      formStore.registerControl(inputAttrs.name, {
         name: inputAttrs.name,
         originalValue: inputAttrs.value,
         value: inputAttrs.value,

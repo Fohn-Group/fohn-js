@@ -61,7 +61,7 @@ function pluginFactory(name, className, shortHand = false, nameSpace = null) {
 
   // - Short hand
   if (shortHand) {
-    jQuery[pluginName] = (options) => jQuery({})[pluginName](options);
+    jQuery[pluginName] = options => jQuery({})[pluginName](options);
   }
 }
 

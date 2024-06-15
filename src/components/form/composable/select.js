@@ -1,50 +1,52 @@
-import {watch, ref, reactive, computed} from 'vue';
-import apiService from "../../../services/api.service";
+import { watch, ref, reactive, computed } from 'vue';
+import apiService from '../../../services/api.service';
 
 const getItemLabel = (items, value) => {
   // console.log('getLabel', value);
-  const filteredItems = items.filter((i) => i.key === value);
+  const filteredItems = items.filter(i => i.key === value);
   if (filteredItems.length > 0) {
     return filteredItems[0].label;
   }
 
   // return null;
-}
+};
 
 const useSelect = (props) => {
   const filterMode = props.filterMode;
   const loadItems = ref([...props.items]);
   const filterValue = ref(null);
-  const requestUrl  = props.requestUrl;
+  const requestUrl = props.requestUrl;
 
   // Hook when list items are closed.
   const onClose = (fn) => {
     fn();
   };
-  
+
   const findSiblingIndex = (currentItemKey, direction) => {
     let siblingIndex;
-    const index = select.items.findIndex((item) => item.key === currentItemKey);
+    const index = select.items.findIndex(item => item.key === currentItemKey);
     switch (direction) {
-    case 'up':
-      if (index === 0 || index === -1) {
-        siblingIndex = select.items.length - 1;
-      } else {
-        siblingIndex = index - 1;
-      }
-      break;
-    case 'down':
-      if (index === (select.items.length - 1) || index === -1) {
-        siblingIndex = 0;
-      } else {
-        siblingIndex = index + 1;
-      }
-      break;
-    default:
+      case 'up':
+        if (index === 0 || index === -1) {
+          siblingIndex = select.items.length - 1;
+        }
+        else {
+          siblingIndex = index - 1;
+        }
+        break;
+      case 'down':
+        if (index === (select.items.length - 1) || index === -1) {
+          siblingIndex = 0;
+        }
+        else {
+          siblingIndex = index + 1;
+        }
+        break;
+      default:
     }
 
     return siblingIndex;
-  }
+  };
 
   const select = reactive({
     isOpen: false,
@@ -68,26 +70,27 @@ const useSelect = (props) => {
 
   if (filterMode === 'search') {
     select.items = useFilterModeSearch(filterValue, loadItems);
-  } else {
+  }
+  else {
     select.items = useQueryModeSearch(loadItems);
   }
 
   const fetchItems = useFetchItems(props.requestUrl, select, loadItems, props.items);
 
-  return {select, onClose, filterMode, requestUrl, filterValue, fetchItems, findSiblingIndex};
+  return { select, onClose, filterMode, requestUrl, filterValue, fetchItems, findSiblingIndex };
 };
 
 const useQueryModeSearch = (loadItems) => {
-  return computed( () => {
+  return computed(() => {
     return loadItems.value;
-  })
+  });
 };
 
 const useFilterModeSearch = (filterValue, loadItems) => {
-  return computed( () => {
+  return computed(() => {
     const value = filterValue.value || '';
-    return loadItems.value.filter( (item ) => item.label.toLowerCase().includes(value.toLowerCase()));
-  })
+    return loadItems.value.filter(item => item.label.toLowerCase().includes(value.toLowerCase()));
+  });
 };
 
 // eslint-disable-next-line
@@ -101,8 +104,8 @@ const useAsyncFetchItems = (url, select, loadItems) => {
     const response = await apiService.fetchAsResponse(url, options);
 
     loadItems.value = response.data?.results;
-  }
-}
+  };
+};
 
 // eslint-disable-next-line
 const queryItems = async (url, payload) => {
@@ -114,7 +117,7 @@ const queryItems = async (url, payload) => {
   const response = await apiService.fetchAsResponse(url, options);
 
   return response.data?.results || [];
-}
+};
 
 const useFetchItems = (url, select, loadItems, propsItem = []) => {
   return (payload, callback = null) => {
@@ -123,7 +126,7 @@ const useFetchItems = (url, select, loadItems, propsItem = []) => {
       body: JSON.stringify(payload),
     };
 
-    const {isFetching, data } = apiService.fetchAsResponse(url, options);
+    const { isFetching, data } = apiService.fetchAsResponse(url, options);
 
     watch(isFetching, (inProgress) => {
       select.isFetching = inProgress;
@@ -141,8 +144,8 @@ const useFetchItems = (url, select, loadItems, propsItem = []) => {
       }
     });
   };
-}
+};
 
 export {
-  getItemLabel, useSelect
+  getItemLabel, useSelect,
 };

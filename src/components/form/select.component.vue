@@ -1,10 +1,9 @@
-
 <script>
 import {
   watch, onUpdated, ref, toRefs, onMounted,
 } from 'vue';
 import { useSelect } from './composable/select';
-import {onKeyStroke, useDebounceFn} from "@vueuse/core";
+import { onKeyStroke, useDebounceFn } from '@vueuse/core';
 
 export default {
   name: 'fohn-select',
@@ -18,8 +17,8 @@ export default {
       type: String,
       validator(value) {
         // The value must match one of these strings
-        return ['search', 'query'].includes(value)
-      }
+        return ['search', 'query'].includes(value);
+      },
     },
     allowNull: {
       type: Boolean,
@@ -51,36 +50,38 @@ export default {
     const selectEl = ref(null);
     const selectInputEl = ref(null);
     const { modelValue } = toRefs(props);
-    const {select, filterMode, filterValue, fetchItems, findSiblingIndex } = useSelect(props);
+    const { select, filterMode, filterValue, fetchItems, findSiblingIndex } = useSelect(props);
     let valueOnOpen;
 
     onKeyStroke(['ArrowUp'], (e) => {
       e.preventDefault();
       if (!select.isOpen) {
         openItems();
-      } else {
+      }
+      else {
         const index = findSiblingIndex(select.value, 'up');
         select.value = select.items[index].key;
         emit('update:modelValue', select.items[index].key);
       }
-    },{ target: selectInputEl })
+    }, { target: selectInputEl });
 
     onKeyStroke(['ArrowDown'], (e) => {
       e.preventDefault();
       if (!select.isOpen) {
         openItems();
-      } else {
+      }
+      else {
         const index = findSiblingIndex(select.value, 'down');
         select.value = select.items[index].key;
         emit('update:modelValue', select.items[index].key);
       }
-    },{ target: selectInputEl })
+    }, { target: selectInputEl });
 
     onKeyStroke('Escape', (e) => {
       emit('update:modelValue', valueOnOpen);
       select.value = valueOnOpen;
       closeItems();
-    },{ target: selectInputEl })
+    }, { target: selectInputEl });
 
     onKeyStroke('Enter', (e) => {
       if (select.isOpen) {
@@ -88,7 +89,7 @@ export default {
         e.stopPropagation();
         e.preventDefault();
       }
-    },{ target: selectInputEl })
+    }, { target: selectInputEl });
 
     /**
      * Watch when modelValue changes, i.e. when attached to a form
@@ -98,7 +99,7 @@ export default {
     watch(modelValue, (newValue) => {
       select.value = newValue;
       if (newValue && !select.label) {
-        fetchItems({action: 'init', value: newValue});
+        fetchItems({ action: 'init', value: newValue });
       }
     });
 
@@ -106,7 +107,8 @@ export default {
     const toggleList = () => {
       if (select.isOpen) {
         closeItems();
-      } else {
+      }
+      else {
         openItems();
       }
     };
@@ -115,7 +117,7 @@ export default {
       emit('update:modelValue', item.key);
       select.value = item.key;
       filterValue.value = null;
-      closeItems()
+      closeItems();
     };
 
     const closeItems = () => {
@@ -130,7 +132,7 @@ export default {
         select.isOpen = true;
         valueOnOpen = modelValue.value;
       }
-    }
+    };
 
     const clearValue = (forceOpen = true) => {
       emit('update:modelValue', null);
@@ -141,7 +143,7 @@ export default {
       }
     };
 
-    const isItemSelected = (item) => select.value === item.key;
+    const isItemSelected = item => select.value === item.key;
 
     const debounceFetchItems = useDebounceFn((label) => {
       if (label) {
@@ -157,17 +159,17 @@ export default {
       if (filterMode === 'query') {
         select.isOpen = false;
         debounceFetchItems(filterValue.value);
-      } else {
+      }
+      else {
         openItems();
       }
     };
 
-    onMounted( () => {
-
+    onMounted(() => {
       // initialise select items.
       if (props.requestUrl) {
-        fetchItems({action: 'init', value: modelValue.value}, (values) => {
-          if (! values.find( (item) => item.key === modelValue.value)) {
+        fetchItems({ action: 'init', value: modelValue.value }, (values) => {
+          if (!values.find(item => item.key === modelValue.value)) {
             clearValue(false);
           }
         });

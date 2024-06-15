@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import vueService from "../../services/vue.service";
+import vueService from '../../services/vue.service';
 
 /**
  * Return a Pinia store definition function.
@@ -20,7 +20,7 @@ export const useTabsStoreFactory = (id) => {
       currentIdx: 0,
     }),
     getters: {
-      activeTabName: (state) => state.activeTab,
+      activeTabName: state => state.activeTab,
     },
     actions: {
       getTab(name) {
@@ -75,4 +75,4 @@ export const useTabsStoreFactory = (id) => {
   vueService.addStore(id, store);
 
   return store;
-}
+};

@@ -34,7 +34,7 @@ const resize = {
     document.removeEventListener('resize', el._onResizeCallback);
     delete el._onResizeCallback;
   },
-}
+};
 
 /**
  *
@@ -56,6 +56,5 @@ const esc = {
     delete el._keydownEscCallback;
   },
 };
-
 
 export { focus, resize, esc };

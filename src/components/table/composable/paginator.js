@@ -17,21 +17,21 @@ function getPaginatorMethod(fetchPage, tableStore) {
     tableStore.currentPage = page;
 
     fetchPage();
-  }
+  };
 
   return {
     increasePage: (by = 1) => {
       loadPage(tableStore.currentPage + by);
     },
     decreasePage: (by = 1) => {
-      if ((tableStore.currentPage - by) > 0 ) {
+      if ((tableStore.currentPage - by) > 0) {
         loadPage(tableStore.currentPage - by);
       }
     },
     loadPage: loadPage,
-  }
+  };
 }
 
 export {
-  getPaginatorMethod
-}
+  getPaginatorMethod,
+};

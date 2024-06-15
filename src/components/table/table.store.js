@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
-import { useLocalStorage } from "@vueuse/core";
-import apiService from "../../services/api.service";
-import {utils} from "../../utils";
-import {watch} from "vue";
+import { useLocalStorage } from '@vueuse/core';
+import apiService from '../../services/api.service';
+import { utils } from '../../utils';
+import { watch } from 'vue';
 
 /**
  * Return a Pinia store definition function.
@@ -23,7 +23,9 @@ export const useTableStoreFactory = (id) => {
         sort: {
           columnName: '',
           direction: 'none',
-        }
+        },
+        filters: [],
+        matchType: 'and',
       }),
       currentRows: [],
       selectedRows: new Set(),
@@ -32,19 +34,69 @@ export const useTableStoreFactory = (id) => {
     }),
     getters: {
       isRowSelected: (state) => {
-        return (id) => state.selectedRows.has(id);
+        return id => state.selectedRows.has(id);
       },
       hasRowSelected: (state) => {
         return state.selectedRows.size > 0;
       },
+      filters: (state) => {
+        return state.tableState.filters;
+      },
+      matchType: (state) => {
+        return state.tableState.matchType;
+      },
+      /**
+       *  While filters hold internal filter component data, activeFilters hold
+       *  the real filters data to be sent to server. It will only return filter that
+       *  are set with a value or filter where operate does not need a value.
+       *
+       */
+      activeFilters: (state) => {
+        return state.tableState.filters.filter((f) => {
+          return (f.value !== null && f.requiredValue) || !f.requiredValue;
+        }).map((filter) => {
+          return { column: filter.column, operator: filter.operator, value: filter.value };
+        });
+      },
     },
     actions: {
+      setFilters(filters) {
+        this.tableState.filters = filters;
+      },
+      addFilter(filter) {
+        this.tableState.filters.push({ ...filter, filterId: getFilterNextId(this.tableState.filters) });
+      },
+      removeAllFilter() {
+        this.tableState.filters = [];
+      },
+      removeFilter(id) {
+        const idx = this.tableState.filters.findIndex(f => f.filterId === id);
+        this.tableState.filters.splice(idx, 1);
+      },
+      updateFilter(filter) {
+        this.tableState.filters.forEach((f) => {
+          if (f.filterId === filter.filterId) {
+            f = { ...filter };
+          }
+        });
+      },
+      setFilterMatchType(type) {
+        this.tableState.matchType = type;
+      },
+      getActiveFilterCount() {
+        return this.tableState.filters.length;
+      },
+
       /**
        * Return an apiService useFetch response.
        * @param args = Get argument to pass to url.
        * @returns {UseFetchReturn<*>&PromiseLike<UseFetchReturn<*>>}
        */
       fetchItems(args = {}) {
+        if (!this.url) {
+          console.warn('No url set to fetch data');
+          return;
+        }
         const options = {
           method: 'POST',
           body: utils().json().stringify({
@@ -52,8 +104,12 @@ export const useTableStoreFactory = (id) => {
             _q: this.tableState.currentQuery,
             sorting: this.tableState.sort,
             ipp: this.tableState.itemsPerPage,
+            filters: {
+              matchType: this.tableState.matchType,
+              columns: this.activeFilters,
+            },
           }),
-        }
+        };
 
         const url = fohn.utils().url().appendParams(this.url, args);
         const { isFetching, data } = apiService.fetchAsResponse(url, options);
@@ -76,27 +132,28 @@ export const useTableStoreFactory = (id) => {
         });
       },
       updateRow(id, newRowValue) {
-        this.currentRows.forEach( (tableRow) => {
+        this.currentRows.forEach((tableRow) => {
           if (tableRow.id === id) {
-            Object.keys(newRowValue).forEach( (key) => {
+            Object.keys(newRowValue).forEach((key) => {
               if (tableRow.cells[key]) {
                 tableRow.cells[key].value = newRowValue[key];
               }
-            })
+            });
           }
         });
       },
       toggleRow(id) {
-        if(this.isRowSelected(id)) {
+        if (this.isRowSelected(id)) {
           this.selectedRows.delete(id);
-        } else {
+        }
+        else {
           this.selectedRows.add(id);
         }
       },
-      addRowIdToSelection (id) {
+      addRowIdToSelection(id) {
         this.selectedRows.add(id);
       },
-      removeRowIdFromSelection (id) {
+      removeRowIdFromSelection(id) {
         this.selectedRows.delete(id);
       },
       clearSelectedRows() {
@@ -104,7 +161,7 @@ export const useTableStoreFactory = (id) => {
       },
       deleteRow(id) {
         this.currentRows = [...this.currentRows.filter((tableRow) => {
-          return tableRow.id !== id
+          return tableRow.id !== id;
         })];
         this.fetchItems();
       },
@@ -114,11 +171,11 @@ export const useTableStoreFactory = (id) => {
       },
       sortTable(columnName, dir = '') {
         if (!dir) {
-          // eslint-disable-next-line max-len
           const direction = determineSortDirection(columnName, this.tableState.sort.columnName, this.tableState.sort.direction);
           this.tableState.sort.columnName = direction === 'none' ? '' : columnName;
           this.tableState.sort.direction = direction;
-        } else {
+        }
+        else {
           this.tableState.sort.direction = dir;
           this.tableState.sort.columnName = columnName;
         }
@@ -165,7 +222,7 @@ export const useTableStoreFactory = (id) => {
           body: utils().json().stringify({
             ids: Array.from(this.selectedRows),
           }),
-        }
+        };
 
         targetElement.classList.add('loading');
         const { isFetching, data, onFetchFinally, onFetchError } = apiService.fetchAsResponse(url, options);
@@ -174,7 +231,7 @@ export const useTableStoreFactory = (id) => {
           this.isFetching = inProgress;
         });
 
-        onFetchFinally( () => {
+        onFetchFinally(() => {
           const results = data.value || {};
           if (results.jsRendered) {
             apiService.evalResponse(results.jsRendered);
@@ -188,29 +245,47 @@ export const useTableStoreFactory = (id) => {
           targetElement.classList.remove('loading');
         });
 
-        onFetchError( (error) => {
+        onFetchError((error) => {
           console.error(error);
         });
-      }
+      },
     },
   });
+
   fohn.vueService.addStore(id, store);
 
   return store;
 };
 
+function getFilterNextId(filters) {
+  let maxId = 0;
+
+  if (filters.length > 0) {
+    maxId = filters[0].filterId;
+    for (let i = 1; i < filters.length; i++) {
+      if (filters[i].filterId > maxId) {
+        maxId = filters[i].filterId;
+      }
+    }
+  }
+
+  return maxId + 1;
+}
 function determineSortDirection(newColumnName, oldColumName, currentDirection, newDirection = null) {
   let direction;
   if (newColumnName !== oldColumName) {
     direction = 'asc';
-  } else {
+  }
+  else {
     if (newDirection) {
       direction = newDirection;
-    } else {
+    }
+    else {
       // find index of current direction and return next one
-      if (currentDirection === 'none'){
+      if (currentDirection === 'none') {
         direction = 'asc';
-      } else if (currentDirection === 'asc') {
+      }
+      else if (currentDirection === 'asc') {
         direction = 'desc';
       }
       else {

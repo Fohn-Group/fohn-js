@@ -55,7 +55,7 @@ class ServerEventService {
   }
 
   handleResponse(data) {
-    const {success, jsRendered } = utils().json().parse(data);
+    const { success, jsRendered } = utils().json().parse(data);
     if (success && jsRendered) {
       apiService.evalResponse(jsRendered);
     }

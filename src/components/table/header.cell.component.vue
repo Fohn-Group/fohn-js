@@ -1,5 +1,5 @@
 <script>
-import {computed, toRefs, reactive } from "vue";
+import { computed, toRefs, reactive } from 'vue';
 
 export default {
   /**
@@ -24,7 +24,7 @@ export default {
           label: '',
           isSortable: false,
         };
-      }
+      },
     },
     sortColumn: String,
     sortDirection: String,
@@ -44,7 +44,7 @@ export default {
 
     const isAscending = computed(() => {
       return sortDirection.value === 'asc';
-    })
+    });
 
     const toggleSort = () => {
       if (column.isSortable) {
@@ -75,4 +75,3 @@ export default {
         :toggleSort="toggleSort"
         v-bind="$attrs">Header</slot>
 </template>
-

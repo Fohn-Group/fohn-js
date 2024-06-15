@@ -17,7 +17,7 @@
 import { watch, ref, toRefs } from 'vue';
 
 export default {
-  name:'fohn-ui-exception',
+  name: 'fohn-ui-exception',
   props: {
     isOpen: {
       type: Boolean,
@@ -38,7 +38,7 @@ export default {
 
     const closeModal = () => {
       isOpenState.value = false;
-    }
+    };
 
     return {
       html,
