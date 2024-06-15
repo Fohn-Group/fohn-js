@@ -8,6 +8,7 @@ import { computed, inject, nextTick, ref, watch } from 'vue';
 import { useTableStoreFactory } from './table.store';
 import { useDefaultFilterValue } from './composable/filter';
 import { storeToRefs } from 'pinia';
+import { useDebounceFn } from '@vueuse/core';
 
 export default {
   name: 'fohn-table-filter',
@@ -21,24 +22,35 @@ export default {
     columns: Array,
     operators: Array,
     matchTypes: Array,
+    debounceFetchTime: {
+      type: Number,
+      default: 250,
+    },
   },
 
   setup(props) {
     const tableStore = useTableStoreFactory(inject('tableStoreId', 'myId'))();
-    const { iconName, altIconName, matchTypes } = props;
+    const { iconName, altIconName, matchTypes, columns, operators } = props;
     const isActive = ref(props.isActive);
+    const filterMatchResult = ref(0);
 
-    const columns = props.columns;
-    const operators = props.operators;
-    const { filters, activeFilters, matchType } = storeToRefs(tableStore);
+    const debounceFetch = useDebounceFn((value) => {
+      tableStore.fetchItems();
+    }, props.debounceFetchTime);
+
+    const { filters, activeFilters, matchType, totalItems } = storeToRefs(tableStore);
     if (filters.value.length === 0) {
       tableStore.addFilter(useDefaultFilterValue(columns, operators));
     }
 
+    watch(totalItems, (newV) => {
+      filterMatchResult.value = activeFilters.value.length > 0 ? newV : 0;
+    });
+
     watch(() => activeFilters.value.length, (newL, oldL) => {
       if (newL < oldL) {
         // one filter is remove.
-        tableStore.fetchItems();
+        debounceFetch();
       }
     });
 
@@ -71,6 +83,9 @@ export default {
 
     const setMatchType = (idx) => {
       tableStore.setFilterMatchType(matchTypes[idx].id);
+      if (activeFilters.value.length > 0) {
+        debounceFetch();
+      }
     };
 
     const removeAll = () => {
@@ -92,6 +107,7 @@ export default {
       columns,
       operators,
       filters,
+      filterMatchResult,
       removeAll,
       activeFilters,
       removeFilter,
@@ -106,8 +122,8 @@ export default {
 
 <template>
   <slot
-      :iconCss=iconCss
-      :toggleFilterIcon=toggleFilterIcon
+      :iconCss="iconCss"
+      :toggleFilterIcon="toggleFilterIcon"
       :isActive="isActive"
       :matchType="matchType"
       :matchTypes="matchTypes"
@@ -116,6 +132,7 @@ export default {
       :filters="filters"
       :removeAll="removeAll"
       :filterCount="activeFilters.length"
+      :filterMatchResult="filterMatchResult"
       :removeFilter="removeFilter"
       :insertFilter="insertFilter"
       :updateFilter="updateFilter"
