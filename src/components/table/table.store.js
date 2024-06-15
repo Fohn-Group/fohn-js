@@ -106,7 +106,7 @@ export const useTableStoreFactory = (id) => {
             ipp: this.tableState.itemsPerPage,
             filters: {
               matchType: this.tableState.matchType,
-              columns: this.tableState.filters,
+              columns: this.activeFilters,
             },
           }),
         };
