@@ -6,6 +6,7 @@
 import { onMounted, ref, provide, computed } from 'vue';
 import debounce from 'lodash.debounce';
 import { useTableStoreFactory } from './table.store';
+import { useGetTableHeight } from './composable/table';
 
 export default {
   name: 'fohn-table',
@@ -35,6 +36,9 @@ export default {
       type: Boolean,
       default: false,
     },
+    height: {
+      type: [String, Number],
+    },
   },
   setup(props, { attrs, slots, emit }) {
     const { columns,
@@ -54,6 +58,8 @@ export default {
     const totalItems = ref(0);
     const selectedRows = ref(new Set());
     const query = ref('');
+
+    const heightStyle = useGetTableHeight(props.height);
 
     // each table get its own tableStore.
     const tableStore = useTableStoreFactory(storeId)();
@@ -170,6 +176,7 @@ export default {
       columns,
       sortDirection,
       sortColumn,
+      heightStyle,
       rows,
       currentPage,
       totalItems,
@@ -198,6 +205,7 @@ export default {
         :columns="columns"
         :sortDirection="sortDirection"
         :sortColumn="sortColumn"
+        :heightStyle="heightStyle"
         :rows="rows"
         :currentPage="currentPage"
         :totalItems="totalItems"
