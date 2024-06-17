@@ -78,7 +78,7 @@ export default {
      */
     const updateFilter = (filter) => {
       tableStore.updateFilter(filter);
-      tableStore.fetchItems();
+      tableStore.filterItems();
     };
 
     const setMatchType = (idx) => {
