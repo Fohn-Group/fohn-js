@@ -2,23 +2,25 @@ import { useDebounceFn, useWindowSize } from '@vueuse/core';
 import { ref, watch } from 'vue';
 
 function useGetTableHeight(heightProps) {
-  const maxHeight = ref({});
-  if (heightProps.startsWith('viewport')) {
+  const desiredHeight = heightProps || '';
+  const styleProperty = 'height';
+  const style = ref({});
+  if (desiredHeight.startsWith('viewport')) {
     const factor = (heightProps.split('-')[1] ?? 100) / 100;
     const { height } = useWindowSize();
     const debounceHeight = useDebounceFn((height) => {
-      maxHeight.value['max-height'] = Math.round(height * factor) + 'px';
+      style.value[styleProperty] = Math.round(height * factor) + 'px';
     }, 250);
     watch(height, (newHeight) => {
       debounceHeight(newHeight);
     });
-    maxHeight.value['max-height'] = Math.round(height.value * factor) + 'px';
+    style.value[styleProperty] = Math.round(height.value * factor) + 'px';
   }
-  else if (heightProps > 0) {
-    maxHeight.value['max-height'] = heightProps + 'px';
+  else if (desiredHeight) {
+    style.value[styleProperty] = desiredHeight + 'px';
   }
 
-  return maxHeight;
+  return style;
 }
 
 export { useGetTableHeight };
