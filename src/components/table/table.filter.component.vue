@@ -9,9 +9,15 @@ import { useTableStoreFactory } from './table.store';
 import { useDefaultFilterValue } from './composable/filter';
 import { storeToRefs } from 'pinia';
 import { useDebounceFn } from '@vueuse/core';
+import {c} from "locutus";
 
 export default {
   name: 'fohn-table-filter',
+  computed: {
+    c() {
+      return c
+    }
+  },
   props: {
     isActive: {
       type: Boolean,
@@ -73,6 +79,10 @@ export default {
       tableStore.addFilter(useDefaultFilterValue(columns, operators));
     };
 
+    const closeFilters = () => {
+      isActive.value = false;
+    }
+
     /**
      * Fired when a filter column value has changed.
      */
@@ -110,6 +120,7 @@ export default {
       filterMatchResult,
       removeAll,
       activeFilters,
+      closeFilters,
       removeFilter,
       insertFilter,
       updateFilter,
@@ -134,6 +145,7 @@ export default {
       :filterCount="activeFilters.length"
       :filterMatchResult="filterMatchResult"
       :removeFilter="removeFilter"
+      :closeFilters="closeFilters"
       :insertFilter="insertFilter"
       :updateFilter="updateFilter"
       :setMatchType="setMatchType"
