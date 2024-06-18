@@ -9,15 +9,9 @@ import { useTableStoreFactory } from './table.store';
 import { useDefaultFilterValue } from './composable/filter';
 import { storeToRefs } from 'pinia';
 import { useDebounceFn } from '@vueuse/core';
-import {c} from "locutus";
 
 export default {
   name: 'fohn-table-filter',
-  computed: {
-    c() {
-      return c
-    }
-  },
   props: {
     isActive: {
       type: Boolean,
@@ -81,7 +75,7 @@ export default {
 
     const closeFilters = () => {
       isActive.value = false;
-    }
+    };
 
     /**
      * Fired when a filter column value has changed.
