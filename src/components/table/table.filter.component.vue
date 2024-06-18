@@ -73,12 +73,16 @@ export default {
       tableStore.addFilter(useDefaultFilterValue(columns, operators));
     };
 
+    const closeFilters = () => {
+      isActive.value = false;
+    };
+
     /**
      * Fired when a filter column value has changed.
      */
     const updateFilter = (filter) => {
       tableStore.updateFilter(filter);
-      tableStore.fetchItems();
+      tableStore.filterItems();
     };
 
     const setMatchType = (idx) => {
@@ -110,6 +114,7 @@ export default {
       filterMatchResult,
       removeAll,
       activeFilters,
+      closeFilters,
       removeFilter,
       insertFilter,
       updateFilter,
@@ -134,6 +139,7 @@ export default {
       :filterCount="activeFilters.length"
       :filterMatchResult="filterMatchResult"
       :removeFilter="removeFilter"
+      :closeFilters="closeFilters"
       :insertFilter="insertFilter"
       :updateFilter="updateFilter"
       :setMatchType="setMatchType"

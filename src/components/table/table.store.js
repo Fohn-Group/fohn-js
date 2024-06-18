@@ -39,6 +39,9 @@ export const useTableStoreFactory = (id) => {
       hasRowSelected: (state) => {
         return state.selectedRows.size > 0;
       },
+      // selectedRows: (state) => {
+      //   return state.selectedRows;
+      // },
       filters: (state) => {
         return state.tableState.filters;
       },
@@ -90,9 +93,10 @@ export const useTableStoreFactory = (id) => {
       /**
        * Return an apiService useFetch response.
        * @param args = Get argument to pass to url.
+       * @param fn = A callback to call after data is fetch.
        * @returns {UseFetchReturn<*>&PromiseLike<UseFetchReturn<*>>}
        */
-      fetchItems(args = {}) {
+      fetchItems(args = {}, fn = () => {}) {
         if (!this.url) {
           console.warn('No url set to fetch data');
           return;
@@ -112,7 +116,7 @@ export const useTableStoreFactory = (id) => {
         };
 
         const url = fohn.utils().url().appendParams(this.url, args);
-        const { isFetching, data } = apiService.fetchAsResponse(url, options);
+        const { isFetching, data, onFetchFinally } = apiService.fetchAsResponse(url, options);
 
         watch(isFetching, (inProgress) => {
           this.isFetching = inProgress;
@@ -129,6 +133,10 @@ export const useTableStoreFactory = (id) => {
             // reload previous page if no rows are return.
             this.loadPage(this.tableState.currentPage - 1);
           }
+        });
+
+        onFetchFinally(() => {
+          fn();
         });
       },
       updateRow(id, newRowValue) {
@@ -182,12 +190,25 @@ export const useTableStoreFactory = (id) => {
 
         this.fetchItems();
       },
-      searchItems(query) {
+      filterItems(args = {}) {
+        this.fetchItems(args, () => {
+          this.matchSelectedRows();
+        });
+      },
+      searchItems(query, args = {}) {
         if (query !== this.tableState.currentQuery) {
           this.tableState.currentQuery = query;
           this.tableState.currentPage = 1;
-          this.fetchItems();
+          this.fetchItems(args, () => {
+            this.matchSelectedRows();
+          });
         }
+      },
+      // Match selectedRow with value in currentRows.
+      matchSelectedRows() {
+        const currentRowSet = new Set(this.currentRows.map(row => row.id));
+        const currentSelectedSet = new Set([...this.selectedRows]);
+        this.selectedRows = currentSelectedSet.intersection(currentRowSet);
       },
       setItemsPerPage(ipp) {
         this.tableState.itemsPerPage = ipp;
