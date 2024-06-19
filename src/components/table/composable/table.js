@@ -23,4 +23,30 @@ function useGetTableHeight(heightProps) {
   return style;
 }
 
-export { useGetTableHeight };
+function useSortDirection(newColumnName, oldColumName, currentDirection, newDirection = null) {
+  let direction;
+  if (newColumnName !== oldColumName) {
+    direction = 'asc';
+  }
+  else {
+    if (newDirection) {
+      direction = newDirection;
+    }
+    else {
+      // find index of current direction and return next one
+      if (currentDirection === 'none') {
+        direction = 'asc';
+      }
+      else if (currentDirection === 'asc') {
+        direction = 'desc';
+      }
+      else {
+        direction = 'none';
+      }
+    }
+  }
+
+  return direction;
+}
+
+export { useGetTableHeight, useSortDirection };
