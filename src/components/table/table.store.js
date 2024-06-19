@@ -3,6 +3,7 @@ import { useLocalStorage } from '@vueuse/core';
 import apiService from '../../services/api.service';
 import { utils } from '../../utils';
 import { watch } from 'vue';
+import { useSortDirection } from './composable/table';
 
 /**
  * Return a Pinia store definition function.
@@ -25,6 +26,10 @@ export const useTableStoreFactory = (id) => {
           direction: 'none',
         },
         filters: [],
+        activeFilters: {
+          matchType: 'and',
+          columns: [],
+        },
         matchType: 'and',
       }),
       currentRows: [],
@@ -39,57 +44,17 @@ export const useTableStoreFactory = (id) => {
       hasRowSelected: (state) => {
         return state.selectedRows.size > 0;
       },
-      // selectedRows: (state) => {
-      //   return state.selectedRows;
-      // },
       filters: (state) => {
         return state.tableState.filters;
       },
       matchType: (state) => {
         return state.tableState.matchType;
       },
-      /**
-       *  While filters hold internal filter component data, activeFilters hold
-       *  the real filters data to be sent to server. It will only return filter that
-       *  are set with a value or filter where operate does not need a value.
-       *
-       */
-      activeFilters: (state) => {
-        return state.tableState.filters.filter((f) => {
-          return (f.value !== null && f.requiredValue) || !f.requiredValue;
-        }).map((filter) => {
-          return { column: filter.column, operator: filter.operator, value: filter.value };
-        });
-      },
     },
     actions: {
       setFilters(filters) {
         this.tableState.filters = filters;
       },
-      addFilter(filter) {
-        this.tableState.filters.push({ ...filter, filterId: getFilterNextId(this.tableState.filters) });
-      },
-      removeAllFilter() {
-        this.tableState.filters = [];
-      },
-      removeFilter(id) {
-        const idx = this.tableState.filters.findIndex(f => f.filterId === id);
-        this.tableState.filters.splice(idx, 1);
-      },
-      updateFilter(filter) {
-        this.tableState.filters.forEach((f) => {
-          if (f.filterId === filter.filterId) {
-            f = { ...filter };
-          }
-        });
-      },
-      setFilterMatchType(type) {
-        this.tableState.matchType = type;
-      },
-      getActiveFilterCount() {
-        return this.tableState.filters.length;
-      },
-
       /**
        * Return an apiService useFetch response.
        * @param args = Get argument to pass to url.
@@ -108,10 +73,7 @@ export const useTableStoreFactory = (id) => {
             _q: this.tableState.currentQuery,
             sorting: this.tableState.sort,
             ipp: this.tableState.itemsPerPage,
-            filters: {
-              matchType: this.tableState.matchType,
-              columns: this.activeFilters,
-            },
+            filters: this.tableState.activeFilters,
           }),
         };
 
@@ -179,7 +141,7 @@ export const useTableStoreFactory = (id) => {
       },
       sortTable(columnName, dir = '') {
         if (!dir) {
-          const direction = determineSortDirection(columnName, this.tableState.sort.columnName, this.tableState.sort.direction);
+          const direction = useSortDirection(columnName, this.tableState.sort.columnName, this.tableState.sort.direction);
           this.tableState.sort.columnName = direction === 'none' ? '' : columnName;
           this.tableState.sort.direction = direction;
         }
@@ -190,7 +152,9 @@ export const useTableStoreFactory = (id) => {
 
         this.fetchItems();
       },
-      filterItems(args = {}) {
+      filterItems(matchType, columns, args = {}) {
+        this.tableState.activeFilters.columns = columns;
+        this.tableState.activeFilters.matchType = matchType;
         this.fetchItems(args, () => {
           this.matchSelectedRows();
         });
@@ -274,46 +238,5 @@ export const useTableStoreFactory = (id) => {
   });
 
   fohn.vueService.addStore(id, store);
-
   return store;
 };
-
-function getFilterNextId(filters) {
-  let maxId = 0;
-
-  if (filters.length > 0) {
-    maxId = filters[0].filterId;
-    for (let i = 1; i < filters.length; i++) {
-      if (filters[i].filterId > maxId) {
-        maxId = filters[i].filterId;
-      }
-    }
-  }
-
-  return maxId + 1;
-}
-function determineSortDirection(newColumnName, oldColumName, currentDirection, newDirection = null) {
-  let direction;
-  if (newColumnName !== oldColumName) {
-    direction = 'asc';
-  }
-  else {
-    if (newDirection) {
-      direction = newDirection;
-    }
-    else {
-      // find index of current direction and return next one
-      if (currentDirection === 'none') {
-        direction = 'asc';
-      }
-      else if (currentDirection === 'asc') {
-        direction = 'desc';
-      }
-      else {
-        direction = 'none';
-      }
-    }
-  }
-
-  return direction;
-}

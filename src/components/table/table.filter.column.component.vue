@@ -21,7 +21,7 @@
  *  - types array contains all datatype that the operator can be used with.
  *
  */
-import { computed, ref, toRefs, watch } from 'vue';
+import { computed, ref, toRefs } from 'vue';
 import { useFindIndexDefault } from '../utils/composable/utils';
 
 export default {
@@ -53,7 +53,6 @@ export default {
 
   setup(props, { attrs, slots, emit }) {
     const columns = props.columns;
-    // const filterValue = props.filterValue;
     const { operators, filterValue } = toRefs(props);
     const currentOperatorIdx = ref(0);
 
@@ -82,40 +81,38 @@ export default {
       props: { ...columnDef.value.component.props, value: filterValue.value.value },
     });
 
-    watch(() => filterValue.value.value, (oldV, newV) => {
-      if (newV !== oldV) {
-        emit('onUpdate', filterValue);
-      }
-    });
-
     /**
      *
      * SetColumn idx and reset operators and value.
      */
     const setColumn = (idx) => {
       currentColumnIdx.value = idx;
-      currentOperatorIdx.value = 0;
       columnComponent.value = {
         id: columnDef.value.component.name,
         props: { ...columnDef.value.component.props, value: '' },
       };
-
       filterValue.value.column = columns[currentColumnIdx.value].id;
-      filterValue.value.operator = typeOperators.value[currentOperatorIdx.value].id;
-      setValue('');
+      setOperator(0);
     };
 
+    /**
+     * Set operator index and reset value.
+     *
+     */
     const setOperator = (idx) => {
       currentOperatorIdx.value = idx;
       filterValue.value.operator = typeOperators.value[currentOperatorIdx.value].id;
       filterValue.value.requiredValue = columnRequiredValue.value;
-      setValue('');
+      setValue(null);
     };
 
+    /**
+     * Set value and update filterValue.
+     */
     const setValue = (value) => {
       columnComponent.value.props.value = value;
-
-      filterValue.value.value = value === '' ? null : value;
+      filterValue.value.value = value;
+      emit('onUpdate', filterValue);
     };
 
     const deleteFilter = (filterId) => {
@@ -127,6 +124,7 @@ export default {
     };
 
     return {
+      filterValue,
       columnId,
       columnOperator,
       columnComponent,

@@ -6,7 +6,7 @@
  */
 import { computed, inject, nextTick, ref, watch } from 'vue';
 import { useTableStoreFactory } from './table.store';
-import { useDefaultFilterValue } from './composable/filter';
+import { useActiveFilters, useAddDefaultFilter } from './composable/filter';
 import { storeToRefs } from 'pinia';
 import { useDebounceFn } from '@vueuse/core';
 
@@ -35,24 +35,36 @@ export default {
     const filterMatchResult = ref(0);
 
     const debounceFetch = useDebounceFn((value) => {
-      tableStore.fetchItems();
+      tableStore.filterItems(matchType.value, activeFilters.value);
     }, props.debounceFetchTime);
 
-    const { filters, activeFilters, matchType, totalItems } = storeToRefs(tableStore);
+    const { filters, totalItems } = storeToRefs(tableStore);
+    const matchType = ref(tableStore.matchType);
+    const activeFilters = computed(() => useActiveFilters(filters.value));
+
+    const filterCount = ref(activeFilters.value.length);
     if (filters.value.length === 0) {
-      tableStore.addFilter(useDefaultFilterValue(columns, operators));
+      useAddDefaultFilter(filters, columns, operators);
     }
 
     watch(totalItems, (newV) => {
       filterMatchResult.value = activeFilters.value.length > 0 ? newV : 0;
     });
 
-    watch(() => activeFilters.value.length, (newL, oldL) => {
-      if (newL < oldL) {
-        // one filter is remove.
+    watch([activeFilters, matchType], ([newFilter, newMatchType], [oldFilter, oldMatchType]) => {
+      if (newMatchType !== oldMatchType) {
+        debounceFetch();
+        return;
+      }
+      if (newFilter.length !== oldFilter.length) {
+        filterCount.value = newFilter.length;
+        debounceFetch();
+        return;
+      }
+      if (JSON.stringify(newFilter) !== JSON.stringify(oldFilter)) {
         debounceFetch();
       }
-    });
+    }, { deep: true });
 
     const iconCss = computed(() => ({
       [iconName]: !isActive.value && activeFilters.value.length === 0,
@@ -60,17 +72,19 @@ export default {
     }));
 
     const removeFilter = (id) => {
-      tableStore.removeFilter(id);
-      if (tableStore.getActiveFilterCount() === 0) {
+      const idx = filters.value.findIndex(f => f.filterId === id);
+      filters.value.splice(idx, 1);
+
+      if (filters.value.length === 0) {
         isActive.value = false;
         nextTick(() => {
-          tableStore.addFilter(useDefaultFilterValue(columns, operators));
+          useAddDefaultFilter(filters, columns, operators);
         });
       }
     };
 
     const insertFilter = () => {
-      tableStore.addFilter(useDefaultFilterValue(columns, operators));
+      useAddDefaultFilter(filters, columns, operators);
     };
 
     const closeFilters = () => {
@@ -79,24 +93,20 @@ export default {
 
     /**
      * Fired when a filter column value has changed.
+     * Filters are send via ref value. They are automatically update by
+     * TableFilterColumn component.
      */
-    const updateFilter = (filter) => {
-      tableStore.updateFilter(filter);
-      tableStore.filterItems();
-    };
+    const updateFilter = (filter) => {};
 
     const setMatchType = (idx) => {
-      tableStore.setFilterMatchType(matchTypes[idx].id);
-      if (activeFilters.value.length > 0) {
-        debounceFetch();
-      }
+      matchType.value = matchTypes[idx].id;
     };
 
     const removeAll = () => {
-      tableStore.removeAllFilter();
+      filters.value.splice(0, filters.value.length);
       isActive.value = false;
       nextTick(() => {
-        tableStore.addFilter(useDefaultFilterValue(columns, operators));
+        useAddDefaultFilter(filters, columns, operators);
       });
     };
 
@@ -113,7 +123,7 @@ export default {
       filters,
       filterMatchResult,
       removeAll,
-      activeFilters,
+      filterCount,
       closeFilters,
       removeFilter,
       insertFilter,
@@ -136,7 +146,7 @@ export default {
       :operators="operators"
       :filters="filters"
       :removeAll="removeAll"
-      :filterCount="activeFilters.length"
+      :filterCount="filterCount"
       :filterMatchResult="filterMatchResult"
       :removeFilter="removeFilter"
       :closeFilters="closeFilters"
