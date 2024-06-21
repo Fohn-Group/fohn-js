@@ -28,7 +28,10 @@ export default {
     storeId: String,
     dataUrl: String,
     tblItemsPerPage: Number,
-    tblItemsPerPages: Array,
+    tblItemsPerPages: {
+      type: Array,
+      default: () => [50, 100, 250, 500],
+    },
     keepTableState: {
       type: Boolean,
       default: true,
@@ -82,7 +85,6 @@ export default {
     }
 
     if (!tblItemsPerPages.includes(tableStore.tableState.itemsPerPage)) {
-      console.log('t', tblItemsPerPages[0]);
       tableStore.setItemsPerPage(tblItemsPerPages[0]);
       tblItemsPerPage.value = tblItemsPerPages[0];
     }
