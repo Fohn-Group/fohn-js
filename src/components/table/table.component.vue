@@ -27,7 +27,8 @@ export default {
     },
     storeId: String,
     dataUrl: String,
-    itemsPerPage: Number,
+    tblItemsPerPage: Number,
+    tblItemsPerPages: Array,
     keepTableState: {
       type: Boolean,
       default: true,
@@ -47,14 +48,15 @@ export default {
       storeId,
       keepTableState,
       hasSelectableRows,
-      keepSelectionAcrossPage } = props;
+      keepSelectionAcrossPage,
+      tblItemsPerPages } = props;
 
     const rows = ref([]);
     const isFetching = ref(false);
     const currentPage = ref(1);
     const sortColumn = ref('');
     const sortDirection = ref('');
-    const itemsPerPage = ref(props.itemsPerPage);
+    const tblItemsPerPage = ref(0);
     const totalItems = ref(0);
     const selectedRows = ref(new Set());
     const query = ref('');
@@ -74,9 +76,18 @@ export default {
     tableStore.setDataUrl(dataUrl);
     if (!keepTableState) {
       tableStore.setCurrentPage(1);
-      tableStore.setItemsPerPage(itemsPerPage);
+      tableStore.setItemsPerPage(props.tblItemsPerPage);
       tableStore.setCurrentQuery('');
       tableStore.setSort({ columnName: '', direction: 'none' });
+    }
+
+    if (!tblItemsPerPages.includes(tableStore.tableState.itemsPerPage)) {
+      console.log('t', tblItemsPerPages[0]);
+      tableStore.setItemsPerPage(tblItemsPerPages[0]);
+      tblItemsPerPage.value = tblItemsPerPages[0];
+    }
+    else {
+      tblItemsPerPage.value = tableStore.tableState.itemsPerPage;
     }
 
     // subscribe to store change event.
@@ -87,7 +98,7 @@ export default {
       totalItems.value = state.totalItems;
       sortColumn.value = state.tableState.sort.columnName;
       sortDirection.value = state.tableState.sort.direction;
-      itemsPerPage.value = state.tableState.itemsPerPage;
+      tblItemsPerPage.value = state.tableState.itemsPerPage;
       query.value = state.tableState.currentQuery;
       selectedRows.value = new Set(state.selectedRows);
     });
@@ -180,7 +191,8 @@ export default {
       rows,
       currentPage,
       totalItems,
-      itemsPerPage,
+      tblItemsPerPage,
+      tblItemsPerPages,
       loadPage,
       searchItems,
       sortTable,
@@ -209,7 +221,8 @@ export default {
         :rows="rows"
         :currentPage="currentPage"
         :totalItems="totalItems"
-        :itemsPerPage="itemsPerPage"
+        :tblItemsPerPage="tblItemsPerPage"
+        :tblItemsPerPages="tblItemsPerPages"
         :loadPage="loadPage"
         :searchItems="searchItems"
         :sortTable="sortTable"

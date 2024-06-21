@@ -107,6 +107,7 @@ export default {
     return {
       pageRange,
       totalItems,
+      itemsPerPage,
       currentPage,
       itemsPerPages,
       totalPages,
