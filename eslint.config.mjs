@@ -28,6 +28,13 @@ export default [
     },
   },
   {
-    ignores: ['babel.config.js', 'webpack.config.js'],
-  }
+    ignores: [
+      'src/presets/lara/**/*',
+      'node_modules/**/*',
+      'dist/**/*',
+      '.github/**/*',
+      'babel.config.js',
+      'webpack.config.js',
+    ],
+  },
 ];
