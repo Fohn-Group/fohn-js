@@ -48,7 +48,6 @@ const useSelectMode = (mode, node, selectKey) => {
 };
 
 const useUnSelectMode = (mode, node, selectKey) => {
-
   let newKey = {};
   if (!supportedMode.includes(mode)) {
     return newKey;
