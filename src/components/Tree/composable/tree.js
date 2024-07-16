@@ -1,3 +1,15 @@
+const supportedMode = ['single', 'multiple', 'checkbox'];
+const useStringKey = (nodes) => {
+  return nodes.map((node) => {
+    node.key = node.key.toString();
+    if (node?.children?.length > 0) {
+      node.children = useStringKey(node.children);
+    }
+
+    return node;
+  });
+};
+
 /**
  *
  * When extendedNode is use, it adds some options to the node properties.
@@ -16,4 +28,44 @@ const useExtendedNode = (nodes, options) => {
   });
 };
 
-export { useExtendedNode };
+const useSelectMode = (mode, node, selectKey) => {
+  let newKey = {};
+  if (!supportedMode.includes(mode)) {
+    return newKey;
+  }
+
+  if (mode === 'single') {
+    newKey[node.key] = true;
+  }
+  else if (mode === 'multiple') {
+    newKey = { ...{ [node.key]: true }, ...selectKey };
+  }
+  else if (mode === 'checkbox') {
+    newKey = { ...{ [node.key]: { partialChecked: true } }, ...selectKey };
+  }
+
+  return newKey;
+};
+
+const useUnSelectMode = (mode, node, selectKey) => {
+
+  let newKey = {};
+  if (!supportedMode.includes(mode)) {
+    return newKey;
+  }
+
+  if (mode === 'single') {
+    newKey = {};
+  }
+  else if (mode === 'multiple') {
+    for (const [key, value] of Object.entries(selectKey)) {
+      if (key !== node.key) {
+        newKey[key] = value;
+      }
+    }
+  }
+
+  return newKey;
+};
+
+export { useStringKey, useExtendedNode, useSelectMode, useUnSelectMode };
