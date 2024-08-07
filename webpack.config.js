@@ -109,6 +109,7 @@ module.exports = (env) => {
       extensions: [
         '.json',
         '.js',
+        '.vue',
       ],
     },
     plugins: [

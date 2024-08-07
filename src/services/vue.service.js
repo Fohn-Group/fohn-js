@@ -1,8 +1,11 @@
 import { createApp, defineAsyncComponent, ref } from 'vue';
 import { createPinia } from 'pinia';
+import PrimeVue from 'primevue/config';
+import Lara from '../presets/lara-fohn';
 import ClickOutside from '../directives/click-outside.directive';
 import { focus, resize, esc } from '../directives/commons.directive';
 import Components from '../components/components-install';
+import PrimeComponents from '../components/prime-install';
 import jQuery from 'jQuery';
 import fohn from '../fohn-ui';
 
@@ -107,8 +110,12 @@ class VueService {
       },
     });
 
+    app.use(PrimeVue, { unstyled: true, pt: Lara });
+    // app.use(PrimeVue, { unstyled: true, theme: { preset: Lara } });
+
     app.use(this.piniaStore);
     app.use(Components);
+    app.use(PrimeComponents);
     // setup fohn custom directives.
     directives.forEach((directive) => {
       app.directive(directive.name, directive.def);
