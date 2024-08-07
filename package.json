@@ -1,6 +1,6 @@
 {
   "name": "fohn-ui",
-  "version": "1.7.4",
+  "version": "1.8.0",
   "description": "Javascript library for Fohn-Ui php framework.",
   "main": "dist/fohn-ui.min.js",
   "files": [
@@ -13,7 +13,7 @@
     "dev": "webpack --progress --watch --env development",
     "profile": "webpack  --env production --profile --json > ./profile/fohn-ui-bundle-profile.json",
     "analyze-profile": "webpack-bundle-analyzer ./profile/fohn-ui-bundle-profile.json",
-    "lint": "eslint ./src",
+    "lint": "eslint",
     "lint-fix": "eslint ./src --fix"
   },
   "author": "Alain Belair",
@@ -54,6 +54,7 @@
     "lodash.throttle": "^4.1.1",
     "mitt": "^3.0.0",
     "pinia": "^2.0.12",
+    "primevue": "^4.0.0-rc.2",
     "vue": "^3.2.24",
     "vue-flatpickr-component": "^11.0.3",
     "vue-toastification": "^2.0.0-rc.5"
