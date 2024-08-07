@@ -22,6 +22,7 @@ import Dummy from './dummy.component.vue';
 import Modal from './modal/modal.component.vue';
 import Tabs from './tabs/tabs.component.vue';
 import Tab from './tabs/tab.component.vue';
+import Tree from './Tree/tree.component.vue';
 
 const fohnComponents = [
   { name: 'flat-pickr', def: flatPickr },
@@ -48,6 +49,7 @@ const fohnComponents = [
   { name: 'fohn-tab', def: Tab },
   { name: 'fohn-tabs', def: Tabs },
   { name: 'fohn-dummy', def: Dummy },
+  { name: 'fohn-tree', def: Tree },
 ];
 
 export default {
