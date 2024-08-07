@@ -1,54 +1,52 @@
 <script>
 
 import { computed, onMounted, ref } from 'vue';
-import { useExtendedNode, useStringKey } from './composable/tree';
-import apiService from '../../services/api.service';
+import { useExtendedNode, usePostData, useStringKey } from './composable/tree';
 
 export default {
   name: 'fohn-tree',
   props: {
+    // the nodes to be display.
     nodes: {
       type: Array,
       default: () => [],
     },
-    options: {
+    // The raw value for TreeNode selection.
+    nodeValue: {
+      type: Object,
+    },
+    // Callback url. When a tree node is select or unselect.
+    callbackUrl: String,
+    // Node options like collapse and expanded icons.
+    extendedNodeOptions: {
       type: Object,
     },
     useExtendedNodes: {
       type: Boolean,
       default: true,
     },
-    // PassThrough Tree Props
+    // PassThrough Prime TreeNode Props
     ptProps: {
       type: Object,
     },
   },
   setup: function (props, { attrs, slots, emit }) {
     const ptProps = props.ptProps;
-    const selectedKey = ref({});
-    const selectionMode = props.ptProps.selectionMode || 'none';
+    const selectedKey = ref(props.nodeValue);
+    const selectionMode = props.ptProps.selectionMode || 'single';
 
-    const extendedNodes = props.useExtendedNodes ? useExtendedNode(useStringKey(props.nodes), props.options) : useStringKey(props.nodes);
+    const extendedNodes = props.useExtendedNodes ? useExtendedNode(useStringKey(props.nodes), props.extendedNodeOptions) : useStringKey(props.nodes);
 
     const selectNode = (node) => {
-      const options = {
-        method: 'POST',
-        body: JSON.stringify({ __nodeKey: node.key, current: currentSelection.value, value: selectedKey.value }),
-      };
-
-      if (props.options?.selectUrl) {
-        const { data, onFetchFinally } = apiService.fetchAsResponse(props.options.selectUrl, options);
-        onFetchFinally(() => {
-          const js = data.value?.jsRendered;
-          if (js) {
-            apiService.evalResponse(js);
-          }
-        });
+      if (props.callbackUrl) {
+        usePostData(props.callbackUrl, 'select', node.key, currentSelection.value, selectedKey.value);
       }
     };
 
     const unSelectNode = (node) => {
-      // selectedKey.value = useUnSelectMode(props.ptProps.selectionMode, node, selectedKey.value);
+      if (props.callbackUrl) {
+        usePostData(props.callbackUrl, 'unselect', node.key, currentSelection.value, selectedKey.value);
+      }
     };
 
     const updateSelection = (node) => {
