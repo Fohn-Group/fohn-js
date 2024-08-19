@@ -1,4 +1,10 @@
 import apiService from '../../../services/api.service';
+import { ref, watch } from 'vue';
+
+const isTreeFetching = ref(false);
+const useIsTreeFetching = () => {
+  return isTreeFetching;
+};
 
 /**
  *
@@ -43,13 +49,17 @@ const useExtendedNode = (nodes, options) => {
  *  - the raw value of the entire tree node,
  *
  */
-const usePostData = (url, action, key, selectedKeys, treeValue) => {
+const useFetch = (url, payload) => {
   const options = {
     method: 'POST',
-    body: JSON.stringify({ __nodeAction: action, __nodeKey: key, __nodeKeys: selectedKeys, __treeValue: treeValue }),
+    body: JSON.stringify(payload),
   };
 
-  const { data, onFetchFinally } = apiService.fetchAsResponse(url, options);
+  const { isFetching, data, onFetchFinally } = apiService.fetchAsResponse(url, options);
+  watch(isFetching, (inProgress) => {
+    isTreeFetching.value = inProgress;
+  });
+
   onFetchFinally(() => {
     const js = data.value?.jsRendered;
     if (js) {
@@ -58,4 +68,4 @@ const usePostData = (url, action, key, selectedKeys, treeValue) => {
   });
 };
 
-export { useStringKey, useExtendedNode, usePostData };
+export { useStringKey, useExtendedNode, useFetch, useIsTreeFetching };
