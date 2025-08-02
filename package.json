@@ -1,6 +1,6 @@
 {
   "name": "fohn-ui",
-  "version": "1.8.1",
+  "version": "1.9.0",
   "description": "Javascript library for Fohn-Ui php framework.",
   "main": "dist/fohn-ui.min.js",
   "files": [
@@ -25,27 +25,27 @@
     "@babel/plugin-transform-runtime": "^7.16.4",
     "@babel/preset-env": "^7.16.4",
     "@eslint/js": "^9.4.0",
-    "@stylistic/eslint-plugin": "^2.1.0",
-    "@stylistic/eslint-plugin-js": "^2.1.0",
+    "@stylistic/eslint-plugin": "^5.2.2",
     "@vue/babel-plugin-jsx": "^1.1.1",
-    "babel-loader": "^9.1.2",
+    "babel-loader": "^10.0.0",
     "css-loader": "^7.1.2",
     "eslint": "^9.4.0",
     "eslint-config-defaults": "^9.0.0",
-    "eslint-plugin-vue": "^9.26.0",
-    "globals": "^15.4.0",
+    "eslint-plugin-vue": "^10.4.0",
+    "globals": "^16.3.0",
     "style-loader": "^4.0.0",
     "terser-webpack-plugin": "^5.1.1",
+    "vue-eslint-parser": "^10.2.0",
     "vue-loader": "^17.0.0",
     "vue-template-compiler": "^2.6.12",
     "webpack": "^5.65.0",
-    "webpack-cli": "^5.0.1"
+    "webpack-cli": "^6.0.1"
   },
   "dependencies": {
     "@babel/runtime": "^7.16.3",
     "@headlessui/vue": "^1.4.2",
     "@vue/compiler-sfc": "^3.2.24",
-    "@vueuse/core": "^10.1.2",
+    "@vueuse/core": "^13.6.0",
     "core-js": "^3.8.3",
     "locutus": "^2.0.14",
     "lodash.debounce": "^4.0.8",
@@ -53,10 +53,10 @@
     "lodash.range": "^3.2.0",
     "lodash.throttle": "^4.1.1",
     "mitt": "^3.0.0",
-    "pinia": "^2.0.12",
+    "pinia": "^3.0.3",
     "primevue": "^4.0.0-rc.2",
     "vue": "^3.2.24",
-    "vue-flatpickr-component": "^11.0.3",
+    "vue-flatpickr-component": "^12.0.0",
     "vue-toastification": "^2.0.0-rc.5"
   }
 }
