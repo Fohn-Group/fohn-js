@@ -45,6 +45,7 @@
     "@babel/runtime": "^7.16.3",
     "@headlessui/vue": "^1.4.2",
     "@vue/compiler-sfc": "^3.2.24",
+    "@vueuse/components": "^13.6.0",
     "@vueuse/core": "^13.6.0",
     "core-js": "^3.8.3",
     "locutus": "^2.0.14",
