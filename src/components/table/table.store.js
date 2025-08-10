@@ -187,7 +187,7 @@ export const useTableStoreFactory = (id) => {
         this.tableState.sort = sort;
       },
       getCellValue(id, cellName) {
-        const index = this.currentRows.findIndex((row => id === row.id));
+        const index = this.currentRows.findIndex(row => id === row.id);
         if (index > -1) {
           return this.currentRows[index].cells[cellName].value;
         }

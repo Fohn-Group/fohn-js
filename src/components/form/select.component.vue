@@ -1,7 +1,5 @@
 <script>
-import {
-  watch, onUpdated, ref, toRefs, onMounted,
-} from 'vue';
+import { watch, onUpdated, ref, toRefs, onMounted } from 'vue';
 import { useSelect } from './composable/select';
 import { onKeyStroke, useDebounceFn } from '@vueuse/core';
 
@@ -50,46 +48,63 @@ export default {
     const selectEl = ref(null);
     const selectInputEl = ref(null);
     const { modelValue } = toRefs(props);
-    const { select, filterMode, filterValue, fetchItems, findSiblingIndex } = useSelect(props);
+    const { select, filterMode, filterValue, fetchItems, findSiblingIndex }
+      = useSelect(props);
     let valueOnOpen;
 
-    onKeyStroke(['ArrowUp'], (e) => {
-      e.preventDefault();
-      if (!select.isOpen) {
-        openItems();
-      }
-      else {
-        const index = findSiblingIndex(select.value, 'up');
-        select.value = select.items[index].key;
-        emit('update:modelValue', select.items[index].key);
-      }
-    }, { target: selectInputEl });
-
-    onKeyStroke(['ArrowDown'], (e) => {
-      e.preventDefault();
-      if (!select.isOpen) {
-        openItems();
-      }
-      else {
-        const index = findSiblingIndex(select.value, 'down');
-        select.value = select.items[index].key;
-        emit('update:modelValue', select.items[index].key);
-      }
-    }, { target: selectInputEl });
-
-    onKeyStroke('Escape', (e) => {
-      emit('update:modelValue', valueOnOpen);
-      select.value = valueOnOpen;
-      closeItems();
-    }, { target: selectInputEl });
-
-    onKeyStroke('Enter', (e) => {
-      if (select.isOpen) {
-        closeItems();
-        e.stopPropagation();
+    onKeyStroke(
+      ['ArrowUp'],
+      (e) => {
         e.preventDefault();
-      }
-    }, { target: selectInputEl });
+        if (!select.isOpen) {
+          openItems();
+        }
+        else {
+          const index = findSiblingIndex(select.value, 'up');
+          select.value = select.items[index].key;
+          emit('update:modelValue', select.items[index].key);
+        }
+      },
+      { target: selectInputEl },
+    );
+
+    onKeyStroke(
+      ['ArrowDown'],
+      (e) => {
+        e.preventDefault();
+        if (!select.isOpen) {
+          openItems();
+        }
+        else {
+          const index = findSiblingIndex(select.value, 'down');
+          select.value = select.items[index].key;
+          emit('update:modelValue', select.items[index].key);
+        }
+      },
+      { target: selectInputEl },
+    );
+
+    onKeyStroke(
+      'Escape',
+      (e) => {
+        emit('update:modelValue', valueOnOpen);
+        select.value = valueOnOpen;
+        closeItems();
+      },
+      { target: selectInputEl },
+    );
+
+    onKeyStroke(
+      'Enter',
+      (e) => {
+        if (select.isOpen) {
+          closeItems();
+          e.stopPropagation();
+          e.preventDefault();
+        }
+      },
+      { target: selectInputEl },
+    );
 
     /**
      * Watch when modelValue changes, i.e. when attached to a form
@@ -180,9 +195,15 @@ export default {
     onUpdated(() => {
       // scroll items in order to properly display selection in item list element.
       if (select.value && select.isOpen) {
-        const element = selectEl.value.querySelector(`[data-id="${select.value}"]`);
+        const element = selectEl.value.querySelector(
+          `[data-id="${select.value}"]`,
+        );
         if (element) {
-          element.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'start' });
+          element.scrollIntoView({
+            behavior: 'auto',
+            block: 'nearest',
+            inline: 'start',
+          });
         }
       }
     });
@@ -203,17 +224,17 @@ export default {
 </script>
 
 <template>
-  <div ref="selectEl" >
+  <div ref="selectEl">
     <slot
-        :select="select"
-        :toggleList="toggleList"
-        :setValue="setValue"
-        :closeItems="closeItems"
-        :openItems="openItems"
-        :clearValue="clearValue"
-        :isItemSelected="isItemSelected"
-        :filterItems="filterItems"
-    >input slot
+      :select="select"
+      :toggleList="toggleList"
+      :setValue="setValue"
+      :closeItems="closeItems"
+      :openItems="openItems"
+      :clearValue="clearValue"
+      :isItemSelected="isItemSelected"
+      :filterItems="filterItems"
+      >input slot
     </slot>
   </div>
 </template>
