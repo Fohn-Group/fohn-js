@@ -9,8 +9,12 @@ import { useTableStoreFactory } from './table.store';
 import { useActiveFilters, useAddDefaultFilter } from './composable/filter';
 import { storeToRefs } from 'pinia';
 import { useDebounceFn } from '@vueuse/core';
+import { OnClickOutside } from '@vueuse/components';
 
 export default {
+  components: {
+    OnClickOutside,
+  },
   name: 'fohn-table-filter',
   props: {
     isActive: {
@@ -51,20 +55,24 @@ export default {
       filterMatchResult.value = activeFilters.value.length > 0 ? newV : 0;
     });
 
-    watch([activeFilters, matchType], ([newFilter, newMatchType], [oldFilter, oldMatchType]) => {
-      if (newMatchType !== oldMatchType) {
-        debounceFetch();
-        return;
-      }
-      if (newFilter.length !== oldFilter.length) {
-        filterCount.value = newFilter.length;
-        debounceFetch();
-        return;
-      }
-      if (JSON.stringify(newFilter) !== JSON.stringify(oldFilter)) {
-        debounceFetch();
-      }
-    }, { deep: true });
+    watch(
+      [activeFilters, matchType],
+      ([newFilter, newMatchType], [oldFilter, oldMatchType]) => {
+        if (newMatchType !== oldMatchType) {
+          debounceFetch();
+          return;
+        }
+        if (newFilter.length !== oldFilter.length) {
+          filterCount.value = newFilter.length;
+          debounceFetch();
+          return;
+        }
+        if (JSON.stringify(newFilter) !== JSON.stringify(oldFilter)) {
+          debounceFetch();
+        }
+      },
+      { deep: true },
+    );
 
     const iconCss = computed(() => ({
       [iconName]: !isActive.value && activeFilters.value.length === 0,
@@ -110,7 +118,7 @@ export default {
       });
     };
 
-    const toggleFilterIcon = () => isActive.value = !isActive.value;
+    const toggleFilterIcon = () => (isActive.value = !isActive.value);
 
     return {
       iconCss,
@@ -132,11 +140,11 @@ export default {
     };
   },
 };
-
 </script>
 
 <template>
-  <slot
+  <OnClickOutside @trigger="closeFilters">
+    <slot
       :iconCss="iconCss"
       :toggleFilterIcon="toggleFilterIcon"
       :isActive="isActive"
@@ -153,9 +161,10 @@ export default {
       :insertFilter="insertFilter"
       :updateFilter="updateFilter"
       :setMatchType="setMatchType"
-      v-bind="$attrs">table filter</slot>
+      v-bind="$attrs"
+      >table filter</slot
+    >
+  </OnClickOutside>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

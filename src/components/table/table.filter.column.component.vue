@@ -1,5 +1,4 @@
 <script>
-
 /**
  * Single column filtering management.
  * User can select a column, an operator to act on the selected column and a value.
@@ -57,11 +56,16 @@ export default {
     const currentOperatorIdx = ref(0);
 
     // Get initial column idx from filterValue if any.
-    const currentColumnIdx = ref(useFindIndexDefault(columns, column => column.id === filterValue.value.column));
+    const currentColumnIdx = ref(
+      useFindIndexDefault(
+        columns,
+        column => column.id === filterValue.value.column,
+      ),
+    );
 
     // Get columnDef and id base on current idx value.
-    const columnDef = computed (() => columns[currentColumnIdx.value]);
-    const columnId = computed (() => columnDef.value.id);
+    const columnDef = computed(() => columns[currentColumnIdx.value]);
+    const columnId = computed(() => columnDef.value.id);
 
     /** Filter operators base on column data type */
     const typeOperators = computed(() => {
@@ -70,15 +74,25 @@ export default {
       });
     });
 
-    currentOperatorIdx.value = useFindIndexDefault(typeOperators.value, operator => operator.id === filterValue.value.operator);
+    currentOperatorIdx.value = useFindIndexDefault(
+      typeOperators.value,
+      operator => operator.id === filterValue.value.operator,
+    );
 
-    const columnOperator = computed (() => typeOperators.value[currentOperatorIdx.value].id);
-    const columnRequiredValue = computed (() => typeOperators.value[currentOperatorIdx.value].requiredValue);
+    const columnOperator = computed(
+      () => typeOperators.value[currentOperatorIdx.value].id,
+    );
+    const columnRequiredValue = computed(
+      () => typeOperators.value[currentOperatorIdx.value].requiredValue,
+    );
 
     /** Get what type of component is required for setting filter value. */
     const columnComponent = ref({
       id: columnDef.value.component.name,
-      props: { ...columnDef.value.component.props, value: filterValue.value.value },
+      props: {
+        ...columnDef.value.component.props,
+        value: filterValue.value.value,
+      },
     });
 
     /**
@@ -101,7 +115,8 @@ export default {
      */
     const setOperator = (idx) => {
       currentOperatorIdx.value = idx;
-      filterValue.value.operator = typeOperators.value[currentOperatorIdx.value].id;
+      filterValue.value.operator
+        = typeOperators.value[currentOperatorIdx.value].id;
       filterValue.value.requiredValue = columnRequiredValue.value;
       setValue(null);
     };
@@ -112,7 +127,7 @@ export default {
     const setValue = (value) => {
       columnComponent.value.props.value = value;
       filterValue.value.value = value;
-      emit('onUpdate', filterValue);
+      emit('onUpdate', filterValue.value);
     };
 
     const deleteFilter = (filterId) => {
@@ -136,27 +151,28 @@ export default {
       setValue,
       deleteFilter,
       addFilter,
-      currentOperatorIdx };
+      currentOperatorIdx,
+    };
   },
 };
 </script>
 
 <template>
   <slot
-      :columnId="columnId"
-      :columnOperator="columnOperator"
-      :columnComponent="columnComponent"
-      :columnRequiredValue="columnRequiredValue"
-      :columns="columns"
-      :typeOperators="typeOperators"
-      :setColumn="setColumn"
-      :setOperator="setOperator"
-      :setValue="setValue"
-      :deleteFilter="deleteFilter"
-      :addFilter="addFilter"
-      v-bind="$attrs">filter item</slot>
+    :columnId="columnId"
+    :columnOperator="columnOperator"
+    :columnComponent="columnComponent"
+    :columnRequiredValue="columnRequiredValue"
+    :columns="columns"
+    :typeOperators="typeOperators"
+    :setColumn="setColumn"
+    :setOperator="setOperator"
+    :setValue="setValue"
+    :deleteFilter="deleteFilter"
+    :addFilter="addFilter"
+    v-bind="$attrs"
+    >filter item</slot
+  >
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
