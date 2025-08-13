@@ -1,5 +1,4 @@
 <script>
-
 /**
  * Hold a filter item value.
  * Value is set via a dynamic component.
@@ -39,6 +38,13 @@ export default {
       emit('onUpdateValue', value);
     }, props.debounceTime);
 
+    const preventClickOutside = isOn => console.log('prevent outside', isOn);
+
+    if (component.value.id === 'flat-pickr') {
+      componentProps.value.config.onOpen = () => preventClickOutside(true);
+      componentProps.value.config.onClose = () => preventClickOutside(false);
+    }
+
     /**
      *  Change component when parent props changed, i.e. when user select a new
      *  column, the new component can setup value according to the new column type.
@@ -58,14 +64,13 @@ export default {
 </script>
 
 <template>
-  <div >
+  <div>
     <slot
       :componentName="componentName"
       :update="update"
-      :componentProps="componentProps"></slot>
+      :componentProps="componentProps"
+    ></slot>
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
