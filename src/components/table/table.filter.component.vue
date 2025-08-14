@@ -51,6 +51,12 @@ export default {
       useAddDefaultFilter(filters, columns, operators);
     }
 
+    let preventClickOutside = false;
+
+    const setPreventClickOutside = (isPrevent) => {
+      preventClickOutside = isPrevent;
+    };
+
     watch(totalItems, (newV) => {
       filterMatchResult.value = activeFilters.value.length > 0 ? newV : 0;
     });
@@ -99,6 +105,12 @@ export default {
       isActive.value = false;
     };
 
+    const closeFiltersFromOutside = () => {
+      if (!preventClickOutside) {
+        closeFilters();
+      }
+    };
+
     /**
      * Fired when a filter column value has changed.
      * Filters are send via ref value. They are automatically update by
@@ -133,17 +145,19 @@ export default {
       removeAll,
       filterCount,
       closeFilters,
+      closeFiltersFromOutside,
       removeFilter,
       insertFilter,
       updateFilter,
       setMatchType,
+      setPreventClickOutside,
     };
   },
 };
 </script>
 
 <template>
-  <OnClickOutside @trigger="closeFilters">
+  <OnClickOutside @trigger="closeFiltersFromOutside">
     <slot
       :iconCss="iconCss"
       :toggleFilterIcon="toggleFilterIcon"
@@ -161,9 +175,9 @@ export default {
       :insertFilter="insertFilter"
       :updateFilter="updateFilter"
       :setMatchType="setMatchType"
+      :setPreventClickOutside="setPreventClickOutside"
       v-bind="$attrs"
-      >table filter</slot
-    >
+      >table filter</slot>
   </OnClickOutside>
 </template>
 
