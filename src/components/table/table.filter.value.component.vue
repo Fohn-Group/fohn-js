@@ -9,7 +9,7 @@ import { useDebounceFn } from '@vueuse/core';
 
 export default {
   name: 'fohn-table-filter-value',
-  emits: ['onUpdateValue'],
+  emits: ['onUpdateValue', 'onCalendarOpen', 'onCalendarClose'],
   props: {
     component: {
       type: Object,
@@ -38,11 +38,22 @@ export default {
       emit('onUpdateValue', value);
     }, props.debounceTime);
 
-    const preventClickOutside = isOn => console.log('prevent outside', isOn);
+    const emitCalendarDisplayStatus = (isOpen) => {
+      if (isOpen) {
+        emit('onCalendarOpen', true);
+      }
+      else {
+        emit('onCalendarClose', true);
+      }
+    };
 
+    /**
+     * When using flat-pickr, emit calendar open, close status.
+     * Need for tracking click outside event for the filter dialog.
+     */
     if (component.value.id === 'flat-pickr') {
-      componentProps.value.config.onOpen = () => preventClickOutside(true);
-      componentProps.value.config.onClose = () => preventClickOutside(false);
+      componentProps.value.config.onOpen = () => emitCalendarDisplayStatus(true);
+      componentProps.value.config.onClose = () => emitCalendarDisplayStatus(false);
     }
 
     /**
